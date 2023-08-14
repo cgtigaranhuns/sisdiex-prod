@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CertificadoMinistrante;
+use App\Http\Controllers\ValidaCertificado;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,11 +15,12 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () { return redirect('/admin'); })->name('login');
-#Route::get('/', function () {
-#     return view('welcome');
-#    return redirect()->route('login');
-#});
+//Route::get('/', function () { return redirect('/admin'); })->name('login');
+Route::get('/', function () {
+     return view('welcome');
+   // return redirect()->route('login');
+});
 
 Route::get('pdf/CertificadoMinistrante/{id}',[CertificadoMinistrante::class, 'print'])->name('imprimirCertificadoMinistrante');
-
+Route::get('ValidaCertificado',[ValidaCertificado::class, 'index'])->name('valida');
+Route::post('validar', [ValidaCertificado::class, 'validar'])->name('validar');
