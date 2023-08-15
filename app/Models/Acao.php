@@ -41,7 +41,7 @@ class Acao extends Model
             'justificativa',
             'objetivo_geral',
             'objetivo_especifico',
-            'motodologia',
+            'metodologia',
             'bibliografia',
             'outras_informacoes',
             'status',

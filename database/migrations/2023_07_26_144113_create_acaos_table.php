@@ -43,7 +43,7 @@ return new class extends Migration
             $table->longText('justificativa');
             $table->longText('objetivo_geral');
             $table->longText('objetivo_especifico');
-            $table->longText('motodologia');
+            $table->longText('metodologia');
             $table->longText('bibliografia');
             $table->longText('outras_informacoes');
             $table->boolean('status');

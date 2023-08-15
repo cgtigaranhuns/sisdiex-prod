@@ -253,7 +253,7 @@ class AcaoResource extends Resource
                                 Forms\Components\Textarea::make('objetivo_especifico')
                                     ->label('Objetivo Específicos')
                                     ->required(false),
-                                Forms\Components\Textarea::make('motodologia')
+                                Forms\Components\Textarea::make('metodologia')
                                     ->required(false),
                                 Forms\Components\Textarea::make('bibliografia')
                                     ->required(false),
@@ -433,6 +433,23 @@ class AcaoResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Tables\Actions\Action::make('form_qacademico')
+                    ->label('Q-Acadêmico')
+                    ->hidden(function () {
+                        /** @var \App\Models\User */
+                        $authUser =  auth()->user();
+                        
+                        if($authUser->hasRole('Administrador'))
+                        {
+                           return false;
+                        }
+                        else 
+                        {
+                           return true;
+                        }  
+                     })
+                    ->url(fn (Acao $record): string => route('imprimirFormQacademico', $record))
+                    ->openUrlInNewTab(),
                 
             ])
             ->bulkActions([

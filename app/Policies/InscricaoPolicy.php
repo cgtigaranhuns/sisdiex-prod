@@ -5,6 +5,7 @@ namespace App\Policies;
 use App\Models\Inscricao;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use App\Models\User;
+
 class InscricaoPolicy
 {
      use HandlesAuthorization;

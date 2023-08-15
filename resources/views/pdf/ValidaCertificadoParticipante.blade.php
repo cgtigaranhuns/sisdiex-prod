@@ -29,7 +29,7 @@
                 <img src="{{ asset('img/logo-ifpe.png') }}" alt="Logo" width="150" height="200">
             </td>    
             <td>
-                <p style="width: 100%; font-size:28px; font-family: 'courier,arial,helvetica;  text-align: center;">Validação de Certificado</p>
+                <p style="width: 100%; font-size:22px; font-family: 'courier,arial,helvetica;  text-align: center;">Validação de Certificado - Participante</p>
             </td>    
         </tr>
     </table>

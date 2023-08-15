@@ -15,4 +15,8 @@ class Area extends Model
         'nome',
         'tipo',
     ];
+
+    public function Acao() {
+        return $this->hasMany(Acao::class);
+    }
 }
