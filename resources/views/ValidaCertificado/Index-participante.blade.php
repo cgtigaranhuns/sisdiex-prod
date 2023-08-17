@@ -46,7 +46,7 @@
                 </td>    
             </tr>
         </table>
-        <form action="{{ route('validar') }}" method="POST">
+        <form action="{{ route('validarParticipante') }}" method="POST">
             @csrf
             <div class="mb-3">
                <input type="text" class="form-control" name="codigo" placeholder="Digite o código do certificado">

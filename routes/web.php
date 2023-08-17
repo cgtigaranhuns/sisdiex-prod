@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CertificadoMinistrante;
 use App\Http\Controllers\FormQacademico;
+use App\Http\Controllers\ValidaCertificadoMinistrante;
 use App\Http\Controllers\ValidaCertificadoParticipante;
 use Illuminate\Support\Facades\Route;
 
@@ -23,6 +24,13 @@ Route::get('/', function () { return redirect('/admin'); })->name('login');
 //});
 
 Route::get('pdf/CertificadoMinistrante/{id}',[CertificadoMinistrante::class, 'print'])->name('imprimirCertificadoMinistrante');
-Route::get('ValidaCertificadoParticipante',[ValidaCertificadoParticipante::class, 'index'])->name('valida');
-Route::post('validar', [ValidaCertificadoParticipante::class, 'validar'])->name('validar');
+
+// CERTIFICADO PARTICIPANTE
+Route::get('ValidaCertificadoParticipante',[ValidaCertificadoParticipante::class, 'index'])->name('ValidaCertificadoParticipante');
+Route::post('validarParticipante', [ValidaCertificadoParticipante::class, 'validar'])->name('validarParticipante');
+
+// CERTIFICADO MINISTRANTE
+Route::get('ValidaCertificadoMinistrante',[ValidaCertificadoMinistrante::class, 'index'])->name('ValidaCertificadoMinistrante');
+Route::post('validarMinistrante', [ValidaCertificadoMinistrante::class, 'validar'])->name('validarMinistrante');
+
 Route::get('pdf/Form-qacademico/{id}',[FormQacademico::class, 'print'])->name('imprimirFormQacademico');

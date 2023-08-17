@@ -54,7 +54,7 @@ class InscricaoResource extends Resource
                                         ->required(false)
                                         ->searchable()
                                         ->options(Acao::all()->pluck('titulo', 'id')->toArray()),
-                                Radio::make('inscricao_tipo')
+                               Radio::make('inscricao_tipo')
                                         ->label('Tipo de Inscrição')
                                         ->options([
                                             '1' => 'Discente - IFPE - Campus Garanhuns',
@@ -65,31 +65,33 @@ class InscricaoResource extends Resource
                                         ->label('Servidor - IFPE - Campus Garanhuns')
                                         ->required(false)
                                         ->searchable()
-                                        ->options(User::all()->pluck('name', 'id')->toArray()),
+                                        ->options(User::all()->pluck('name', 'id')->toArray()), 
                                 Forms\Components\TextInput::make('cpf')
                                         ->mask('999.999.999-99')
-                                        ->label('CPF'),
+                                        ->label('CPF'), 
                                 Forms\Components\Select::make('discente_id')
                                         ->label('Discente - IFPE - Campus Garanhuns')
                                         ->required(false)
                                         ->searchable()
-                                        ->options(Discente::all()->pluck('username', 'id')->toArray()),
+                                        ->getSearchResultsUsing(fn (string $search): array => Discente::where('username', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                                        ->getOptionLabelUsing(fn ($value): ?string => Discente::find($value)?->name),
+                                       //->options(Discente::all()->pluck('username', 'id')->toArray()), 
                                 Forms\Components\TextInput::make('nome')
                                     ->label('Externo - IFPE - Campus Garanhuns')
                                     ->required(false)
-                                    ->maxLength(255),
+                                    ->maxLength(255), 
                                 Forms\Components\TextInput::make('telefone')
                                     ->required(false)
                                     ->mask('(99)99999-9999')
-                                    ->tel(),
+                                    ->tel(), 
                                 Forms\Components\TextInput::make('email')
                                     ->email()
                                     ->required(false)
-                                    ->maxLength(255),
+                                    ->maxLength(255), 
                                 Forms\Components\TextInput::make('instituicao_origem')
                                     ->label('Instituição de Origem')
                                     ->required(false)
-                                    ->maxLength(255),
+                                    ->maxLength(255), 
                                 Forms\Components\Select::make('escolaridade')
                                     ->label('Escolaridade')
                                     ->required(false)
@@ -117,9 +119,6 @@ class InscricaoResource extends Resource
                                     ->label('Nome do responsável')
                                     ->required(false)
                                     ->maxLength(255),
-                             /*   CpfCnpj::make('responsavel_cpf')
-                                    ->rule('cpf_ou_cnpj')
-                                    ->label('CPF do Responsável'), */
                                 Forms\Components\TextInput::make('responsavel_grau'),
                                 Forms\Components\TextInput::make('naturalidade')
                                     ->required(false)
@@ -134,8 +133,8 @@ class InscricaoResource extends Resource
                                         '4' => 'Amarela',
                                         '5' => 'Indígena',
                                         '6' => 'Não Declarar',
-                                    ]),
-                        ])->columnSpanFull()
+                                    ]),  
+                        ])->columnSpanFull() 
                     ]),
                     Section::make('Análise da Inscrição')
                         ->description('Status')
@@ -175,7 +174,7 @@ class InscricaoResource extends Resource
                                                         $set('certificado_cod', '');
                                                         $set('certificado_data', '');
                                                     } 
-                                                }),
+                                                }), 
                                                 
                                             
                                             Forms\Components\TextInput::make('nota')
@@ -190,7 +189,7 @@ class InscricaoResource extends Resource
                                                     '3' => 'Desistência',
                                                     '4' => 'Evasão',
                                                     
-                                                ]),
+                                                ]), 
                                                 
                                             Forms\Components\TextInput::make('certificado_cod')
                                                 ->label('Código do Certificado')
@@ -226,13 +225,13 @@ class InscricaoResource extends Resource
                     ->label('Inscrição'),
                 Tables\Columns\TextColumn::make('acao.titulo')
                     ->label('Evento/Ação'),
-                Tables\Columns\IconColumn::make('inscricao_status')
+                    Tables\Columns\IconColumn::make('inscricao_status')
                     ->alignCenter()
-                    ->label('Inscrição')
+                    ->label('Aprovação')
                     ->icon(fn (string $state): string => match ($state) {
                         '1' => 'heroicon-m-clock',
-                        '2' => 'heroicon-m-check',
-                        '3' => 'heroicon-m-trash',
+                        '2' => 'heroicon-m-academic-cap',
+                        '3' => 'heroicon-m-archive-box-arrow-down',
                     })
                     ->color(fn (string $state): string => match ($state) {
                         '1' => 'warning',
