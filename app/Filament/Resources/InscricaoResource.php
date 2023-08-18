@@ -26,6 +26,8 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Grouping\Group;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 
  
 
@@ -212,6 +214,8 @@ class InscricaoResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+        ->striped()
+        ->defaultSort('id','desc')
             ->groups([
                 Group::make('acao.titulo')
                 ->label('Ação/Evento')
@@ -227,10 +231,10 @@ class InscricaoResource extends Resource
                     ->label('Evento/Ação'),
                     Tables\Columns\IconColumn::make('inscricao_status')
                     ->alignCenter()
-                    ->label('Aprovação')
+                    ->label('Inscrição')
                     ->icon(fn (string $state): string => match ($state) {
                         '1' => 'heroicon-m-clock',
-                        '2' => 'heroicon-m-academic-cap',
+                        '2' => 'heroicon-m-check',
                         '3' => 'heroicon-m-archive-box-arrow-down',
                     })
                     ->color(fn (string $state): string => match ($state) {
@@ -280,7 +284,23 @@ class InscricaoResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Filter::make('Inscrições em Análise')
+                ->query(fn (Builder $query): Builder => $query->where('inscricao_status', 1)),
+                 SelectFilter::make('Evento/Ação')->relationship('acao', 'titulo'),
+                 Tables\Filters\Filter::make('data_inicio')
+                    ->form([
+                        Forms\Components\DatePicker::make('inicio_de')
+                            ->label('Início de:'),
+                        Forms\Components\DatePicker::make('inicio_ate')
+                            ->label('Início até:'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query
+                            ->when($data['inicio_de'],
+                                fn($query) => $query->whereDate('data_inicio', '>=', $data['inicio_de']))
+                            ->when($data['inicio_ate'],
+                                fn($query) => $query->whereDate('data_inicio', '<=', $data['inicio_ate']));
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

@@ -19,4 +19,6 @@ class ListAcaos extends ListRecords
                 ->label('Nova Proposta'),
         ];
     }
+
+    
 }

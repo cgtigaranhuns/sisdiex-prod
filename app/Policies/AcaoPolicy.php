@@ -14,13 +14,15 @@ class AcaoPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->hasPermissionTo('View Acao');
+       // return $user->hasPermissionTo('View Acao');
+
+       return true;
     }
 
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Acao $acao): bool
+    public function view(User $user, Acao $acao)
     {
         //
     }
@@ -30,7 +32,9 @@ class AcaoPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasPermissionTo('Create Acao');
+      //  return $user->hasPermissionTo('Create Acao');
+
+      return true;
     }
 
     /**
@@ -38,7 +42,8 @@ class AcaoPolicy
      */
     public function update(User $user, Acao $acao): bool
     {
-        return $user->hasPermissionTo('Edit Acao');
+       // return $user->hasPermissionTo('Edit Acao');
+       return true;
     }
 
     /**
@@ -46,13 +51,15 @@ class AcaoPolicy
      */
     public function delete(User $user, Acao $acao): bool
     {
-        return $user->hasPermissionTo('Delete Acao');
+       // return $user->hasPermissionTo('Delete Acao');
+
+       return true;
     }
 
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Acao $acao): bool
+    public function restore(User $user, Acao $acao)
     {
         //
     }
@@ -60,7 +67,7 @@ class AcaoPolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Acao $acao): bool
+    public function forceDelete(User $user, Acao $acao)
     {
         //
     }

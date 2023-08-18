@@ -43,14 +43,14 @@ class AcaoResource extends Resource
         /** @var \App\Models\User */
         $authUser =  auth()->user();
                                                     
-        if($authUser->hasRole('Proponente'))
-        {
-
-            return parent::getEloquentQuery()->where('user_id','=', auth()->user()->id);
-        }
-        elseif($authUser->hasRole('Administrador'))
+        if($authUser->hasRole('Administrador'))
         {
             return parent::getEloquentQuery(); 
+            
+        }
+        elseif(!$authUser->hasRole('Administrador'))
+        {
+            return parent::getEloquentQuery()->where('user_id','=', auth()->user()->id);
         }
     } 
 
@@ -82,7 +82,7 @@ class AcaoResource extends Resource
                                                     {
                                                        return User::all()->pluck('name', 'id')->toArray();
                                                     }
-                                                    elseif($authUser->hasRole('Proponente')) 
+                                                    else 
                                                     {
                                                         
                                                        return User::where('id',auth()->user()->id)->pluck('name', 'id')->toArray();
@@ -343,6 +343,8 @@ class AcaoResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->striped()
+            ->defaultSort('id','desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id'),
                 Tables\Columns\TextColumn::make('titulo')
@@ -350,7 +352,7 @@ class AcaoResource extends Resource
                     ->label('Título'),
                 Tables\Columns\IconColumn::make('status')
                     ->alignCenter()
-                    ->label('Inscrição')
+                    ->label('Status')
                     ->icon(fn (string $state): string => match ($state) {
                         '1' => 'heroicon-m-clock',
                         '2' => 'heroicon-m-check',
@@ -413,7 +415,7 @@ class AcaoResource extends Resource
             ])
             ->filters([
                 Filter::make('Em Análise')
-                ->query(fn (Builder $query): Builder => $query->where('status', false)),
+                ->query(fn (Builder $query): Builder => $query->where('status', 1)),
                  SelectFilter::make('proponente')->relationship('user', 'name'),
                  Tables\Filters\Filter::make('data_inicio')
                     ->form([
