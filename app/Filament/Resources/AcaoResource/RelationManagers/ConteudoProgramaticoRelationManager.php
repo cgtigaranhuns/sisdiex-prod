@@ -25,6 +25,11 @@ class ConteudoProgramaticoRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'acao_id';
 
+    protected static ?string $title = 'Conteúdo Programático'; 
+
+
+    
+
     public function form(Form $form): Form
     {
         return $form
@@ -47,6 +52,7 @@ class ConteudoProgramaticoRelationManager extends RelationManager
                     ->label('Data Término')
                     ->required(false),
                 Forms\Components\TextInput::make('carga_horaria')
+                    ->placeholder('HH:mm')
                     ->mask('99:99')   
                     ->label('Carga Horária')
                     ->required(false),
@@ -148,7 +154,10 @@ class ConteudoProgramaticoRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\CreateAction::make(),
+                Tables\Actions\CreateAction::make()
+                    ->label('Novo'),
+                    
+                    
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

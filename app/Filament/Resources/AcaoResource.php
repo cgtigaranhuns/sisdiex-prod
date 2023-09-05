@@ -23,6 +23,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Forms\Get;
 
 
 class AcaoResource extends Resource
@@ -73,6 +74,7 @@ class AcaoResource extends Resource
                                         Forms\Components\Select::make('user_id')
                                             ->label('Proponente')
                                             ->required(false)
+                                            ->default(auth()->user()->id)
                                             ->searchable()
                                             ->options(function () {
                                                     /** @var \App\Models\User */
@@ -94,6 +96,7 @@ class AcaoResource extends Resource
                                 
                                                   
                                 Forms\Components\Select::make('area_conhecimento_id')
+                                    ->preload()
                                     ->label('Área de Conhecimento')
                                     ->required(false)
                                     ->searchable()
@@ -154,10 +157,12 @@ class AcaoResource extends Resource
                                 
                                     
                                 Forms\Components\TextInput::make('carga_hr_semanal')
+                                    ->placeholder('HH:mm')
                                     ->label('Carga Horária Semanal')
                                     ->mask('99:99')
                                     ->required(false),
                                 Forms\Components\TextInput::make('carga_hr_total')
+                                    ->placeholder('HH:mm')
                                     ->label('Carga Horária Total')
                                     ->mask('99:99')
                                     ->required(false),
@@ -298,14 +303,15 @@ class AcaoResource extends Resource
                                                         ->required(false),
                                     Forms\Components\Radio::make('doacao')
                                                         ->label('Doação')
-                                                      //  ->columnSpanFull()
                                                         ->required(false)
+                                                        ->live()
                                                         ->options([
                                                             '1' => 'Sim',
                                                             '2' => 'Não',
                                                             
                                                         ]),
                                     Forms\Components\TextInput::make('tipo_doacao')
+                                                        ->hidden(fn (Get $get): bool => $get('doacao') === null || $get('doacao') === '2')
                                                         ->label('Tipo de Doação')
                                                         ->columnSpanFull()
                                                          ->required(false)
@@ -314,20 +320,24 @@ class AcaoResource extends Resource
                                                         ->label('Cotas')
                                                         ->columnSpanFull()
                                                         ->required(false)
+                                                        ->live()
                                                         ->options([
                                                             '1' => 'Sim',
                                                             '2' => 'Não',
                                                             
                                                         ]),
                                     Forms\Components\TextInput::make('cota_servidor')
+                                                        ->hidden(fn (Get $get): bool => $get('cota') === null || $get('cota') === '2')
                                                         ->label('Cota para Servidor')
                                                         ->required(false)
                                                         ->maxLength(255),
                                     Forms\Components\TextInput::make('cota_discente')
+                                                        ->hidden(fn (Get $get): bool => $get('cota') === null || $get('cota') === '2')
                                                         ->label('Cota para Discente')
                                                         ->required(false)
                                                         ->maxLength(255),
                                     Forms\Components\TextInput::make('cota_externo')
+                                                        ->hidden(fn (Get $get): bool => $get('cota') === null || $get('cota') === '2')
                                                         ->label('Cota para Externo')
                                                         ->required(false)
                                                         ->maxLength(255),
