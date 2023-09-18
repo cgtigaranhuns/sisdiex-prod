@@ -28,6 +28,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
  
 
@@ -309,6 +310,7 @@ class InscricaoResource extends Resource
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    ExportBulkAction::make(),
                 ]),
             ])
             ->emptyStateActions([

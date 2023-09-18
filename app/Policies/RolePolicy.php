@@ -2,9 +2,10 @@
 
 namespace App\Policies;
 
-use App\Models\Role;
+// use App\Models\Role;
 use Illuminate\Auth\Access\HandlesAuthorization;
 use App\Models\User;
+use Spatie\Permission\Models\Role;
 
 class RolePolicy
 {
@@ -20,7 +21,7 @@ class RolePolicy
     /**
      * Determine whether the user can view the model.
      */
-    public function view(User $user, Role $role): bool
+    public function view(User $user, Role $role)
     {
         //
     }
@@ -52,7 +53,7 @@ class RolePolicy
     /**
      * Determine whether the user can restore the model.
      */
-    public function restore(User $user, Role $role): bool
+    public function restore(User $user, Role $role)
     {
         //
     }
@@ -60,7 +61,7 @@ class RolePolicy
     /**
      * Determine whether the user can permanently delete the model.
      */
-    public function forceDelete(User $user, Role $role): bool
+    public function forceDelete(User $user, Role $role)
     {
         //
     }
