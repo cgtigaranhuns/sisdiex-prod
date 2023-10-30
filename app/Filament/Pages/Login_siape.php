@@ -23,7 +23,7 @@ use Illuminate\Validation\ValidationException;
 /**
  * @property Form $form
  */
-class Login extends SimplePage
+class Login_ extends SimplePage
 {
     use InteractsWithFormActions;
     use WithRateLimiting;

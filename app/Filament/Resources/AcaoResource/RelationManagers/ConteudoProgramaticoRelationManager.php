@@ -36,29 +36,29 @@ class ConteudoProgramaticoRelationManager extends RelationManager
             ->schema([
                 Forms\Components\TextInput::make('ministrante')
                     ->label('Ministrante')
-                    ->required(false)
+                    ->required(true)
                     ->maxLength(255),
                 Forms\Components\TextInput::make('cpf')
                     ->mask('999.999.999-99')
                     ->label('CPF'), 
                 Forms\Components\TextInput::make('email')
                     ->label('Email')
-                    ->required(false)
+                    ->required(true)
                     ->email(),
                 Forms\Components\DatePicker::make('data_inicio')
                     ->label('Data Início')
-                    ->required(false),
+                    ->required(true),
                 Forms\Components\DatePicker::make('data_termino')
                     ->label('Data Término')
-                    ->required(false),
+                    ->required(true),
                 Forms\Components\TextInput::make('carga_horaria')
                     ->placeholder('HH:mm')
                     ->mask('99:99')   
                     ->label('Carga Horária')
-                    ->required(false),
+                    ->required(true),
                 Forms\Components\Textarea::make('ementa')
                     ->label('Ementa')
-                    ->required(false)
+                    ->required(true)
                     ->columnSpan('full'), 
                 Forms\Components\Toggle::make('certificado_status')
                     ->label('Liberar Certificado')

@@ -230,7 +230,7 @@ class InscricaoResource extends Resource
                     ->label('Inscrição'),
                 Tables\Columns\TextColumn::make('acao.titulo')
                     ->label('Evento/Ação'),
-                    Tables\Columns\IconColumn::make('inscricao_status')
+                Tables\Columns\IconColumn::make('inscricao_status')
                     ->alignCenter()
                     ->label('Inscrição')
                     ->icon(fn (string $state): string => match ($state) {
