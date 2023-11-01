@@ -9,11 +9,13 @@ use Illuminate\Notifications\Notifiable;
 use LdapRecord\Laravel\Auth\LdapAuthenticatable;
 use LdapRecord\Laravel\Auth\AuthenticatesWithLdap;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Activitylog\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable implements LdapAuthenticatable  
 {
-    use HasApiTokens, HasFactory, Notifiable, HasRoles, AuthenticatesWithLdap;
+    use HasApiTokens, HasFactory, Notifiable, HasRoles, AuthenticatesWithLdap, LogsActivity;
 
     /**
      * The attributes that are mass assignable.
@@ -49,5 +51,13 @@ class User extends Authenticatable implements LdapAuthenticatable
 
     public function Acao() {
         return $this->hasMany(Acao::class);
+    }
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+         ->logOnly(['*'])
+         ->logOnlyDirty();
+        // Chain fluent methods for configuration options
     }
 }

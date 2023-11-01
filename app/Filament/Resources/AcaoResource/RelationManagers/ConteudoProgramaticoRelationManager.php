@@ -137,7 +137,8 @@ class ConteudoProgramaticoRelationManager extends RelationManager
             
             ->columns([
                  Tables\Columns\TextColumn::make('ministrante'),
-                 Tables\Columns\TextColumn::make('cpf'),
+                 Tables\Columns\TextColumn::make('cpf')
+                    ->label('CPF'),
                  Tables\Columns\TextColumn::make('email'),
                  Tables\Columns\TextColumn::make('ementa')
                     ->limit(50),

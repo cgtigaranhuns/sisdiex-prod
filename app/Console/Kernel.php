@@ -14,7 +14,9 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('ldap:import labs', [
             '--no-interaction',
-         ])->hourly()->appendOutputTo(storage_path('logs/import-discentes.log'));
+         ])
+         ->hourly()
+         ->appendOutputTo(storage_path('logs/import-discentes.log'));
     }
 
     /**
