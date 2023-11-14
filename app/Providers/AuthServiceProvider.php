@@ -10,6 +10,7 @@ use App\Models\User;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use App\Policies\AcaoPolicy;
+use App\Policies\ActivityPolicy;
 use App\Policies\AreaPolicy;
 use App\Policies\DiscentePolicy;
 use App\Policies\InscricaoPolicy;
@@ -20,6 +21,7 @@ use App\Policies\RolePolicy;
 
 // use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Spatie\Activitylog\Models\Activity;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -37,6 +39,7 @@ class AuthServiceProvider extends ServiceProvider
         User::class => UserPolicy::class, 
         Permission::class => PermissionPolicy::class,
         Role::class => RolePolicy::class,
+        Activity::class => ActivityPolicy::class,
 
     ];
 

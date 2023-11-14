@@ -312,19 +312,27 @@ class AcaoResource extends Resource
                                     Forms\Components\Radio::make('status')
                                                         ->label('Situação da Proposta')
                                                         ->required(true)
+                                                        ->live()
                                                         ->options([
                                                             '1' => 'Em Análise',
                                                             '2' => 'Efetivada',
                                                             '3' => 'Não Efetivada',
                                                         ])
                                                         ->default('1'),
+                                    Forms\Components\Textarea::make('status_justifique')
+                                                        ->columnSpan('2')
+                                                        ->label('Justificativa')
+                                                        ->hidden(fn (Get $get) => $get('status') != '3'),
+                                                        
                                     Forms\Components\DatePicker::make('data_inicio_inscricoes')
                                                        ->closeOnDateSelection()
                                                         ->label('Início das Incrições')
+                                                        ->hidden(fn (Get $get) => $get('status') == '3')
                                                         ->required(false),
                                     Forms\Components\DatePicker::make('data_fim_inscricoes')
                                                         ->closeOnDateSelection()
                                                         ->label('Encerramento das Incrições')
+                                                        ->hidden(fn (Get $get) => $get('status') == '3')
                                                         ->required(false),
                                     Forms\Components\Radio::make('doacao')
                                                         ->label('Doação')

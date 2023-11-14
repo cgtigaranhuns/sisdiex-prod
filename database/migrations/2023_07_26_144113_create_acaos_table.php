@@ -47,6 +47,7 @@ return new class extends Migration
             $table->longText('bibliografia');
             $table->longText('outras_informacoes');
             $table->boolean('status');
+            $table->longText('status_justifique');
             $table->date('data_inicio_inscricoes');
             $table->date('data_fim_inscricoes');
             $table->string('doacao');

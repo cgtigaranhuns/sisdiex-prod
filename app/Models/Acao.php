@@ -47,6 +47,7 @@ class Acao extends Model
             'bibliografia',
             'outras_informacoes',
             'status',
+            'status_justifique',
             'data_inicio_inscricoes',
             'data_fim_inscricoes',
             'doacao',
