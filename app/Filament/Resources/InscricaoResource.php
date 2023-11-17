@@ -4,6 +4,8 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\InscricaoResource\Pages;
 use App\Filament\Resources\InscricaoResource\RelationManagers;
+use App\Mail\Inscricao as MailInscricao;
+use App\Mail\InscricaoStatus;
 use App\Models\User;
 use App\Models\Acao;
 use App\Models\Discente;
@@ -28,6 +30,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Support\Facades\Mail;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
  
@@ -50,7 +53,7 @@ class InscricaoResource extends Resource
                 Section::make('Dados Pessoais')
                     ->description('Identificação')
                     ->schema([
-                            Card::make()
+                            Section::make()
                             ->schema([
                                 Forms\Components\Select::make('acao_id')
                                         ->label('Ação/Evento')
@@ -142,16 +145,36 @@ class InscricaoResource extends Resource
                     Section::make('Análise da Inscrição')
                         ->description('Status')
                              ->schema([
-                                    Card::make()
+                                    Section::make()
                                         ->schema([    
                                             Radio::make('inscricao_status')
                                                 ->label('Situação da Inscrição')
                                                 ->required(false)
+                                                ->live()
                                                 ->options([
                                                     '1' => 'Em Análise',
                                                     '2' => 'Efetivada',
                                                     '3' => 'Não Efetivada',
                                                 ])
+                                                ->afterStateUpdated(function($state, Inscricao $inscricao, $record){
+                                                  //  $acao = Acao::find($record->acao_id);
+                                                    //  dd($this->data['status']);
+                                                    if($state == 2)  {          
+                                                      /*  Mail::send('Sua inscrição para o Evento/Ação: '.$record->acao->titulo.', está confirmada.', function($msg, Get $get) {
+                                                       $msg->to($get('email'))->subject('Inscrição confirmada'); 
+                                                        
+                                                    }); */
+                                                    Mail::to($record->email)->send(new InscricaoStatus($inscricao));
+                                                    }
+                                                    elseif($state == 3)  {          
+                                                        Mail::raw('Sua inscrição para o Evento/Ação: '.$record->acao->titulo.', foi recusada. Entre em contato com a Divisão de 
+                                                        Extensão (DIEX), para mais informações. Email: diex@garanhuns.ifpe.edu.br', function($msg, $record) {
+                                                        $msg->to($this->$record->email)->subject('Inscrição recusada');  
+                                                
+                                                        }); 
+                                                   }
+                                                
+                                                })
                                                 ->default('1'),
                                                 
                                            

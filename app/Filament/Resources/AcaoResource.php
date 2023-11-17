@@ -62,18 +62,18 @@ class AcaoResource extends Resource
             Section::make('Cadastro da Ação')
                 ->description('Dados Básicos')
                 ->schema([
-                        Card::make()
+                        Section::make()
                         ->schema([
                                 Forms\Components\TextInput::make('titulo')
                                     ->label('Título')
-                                    ->required(true)
+                                    ->required(false)
                                     ->columnSpanFull()
                                     ->maxLength(255),
 
                             
                                         Forms\Components\Select::make('user_id')
                                             ->label('Proponente')
-                                            ->required(true)
+                                            ->required(false)
                                             ->native(false)
                                             ->default(auth()->user()->id)
                                             ->searchable()
@@ -100,30 +100,30 @@ class AcaoResource extends Resource
                                     ->preload()
                                     ->native(false)
                                     ->label('Área de Conhecimento')
-                                    ->required(true)
+                                    ->required(false)
                                     ->searchable()
                                     ->options(Area::where('tipo', 2)->pluck('nome', 'id')->toArray()),
                                 Forms\Components\Select::make('area_tematica_id')
                                     ->native(false)
                                     ->label('Área Temática')
                                     ->searchable()
-                                    ->required(true)
+                                    ->required(false)
                                     ->options(Area::where('tipo', 3)->pluck('nome', 'id')->toArray()),
                                 Forms\Components\Select::make('area_extensao_id')
                                     ->native(false)
                                     ->label('Área de Extensão')
                                     ->searchable()
-                                    ->required(true)
+                                    ->required(false)
                                     ->options(Area::where('tipo', 1)->pluck('nome', 'id')->toArray()),
                                 Forms\Components\Select::make('tipo_acao_id')
                                     ->native(false)
                                     ->label('Tipo de Ação')
                                     ->searchable()
-                                    ->required(true)
+                                    ->required(false)
                                     ->options(TipoAcao::all()->pluck('nome', 'id')->toArray()),
                                 Forms\Components\Radio::make('atividade_relativa')
                                     ->label('Atividade Relativa')
-                                    ->required(true)
+                                    ->required(false)
                                     ->options([
                                         '1' => 'Ensino',
                                         '2' => 'Pesquisa',
@@ -131,46 +131,46 @@ class AcaoResource extends Resource
                                     ]),
                                 Forms\Components\TextInput::make('publico_alvo')
                                     ->label('Público Alvo')
-                                    ->required(true)
+                                    ->required(false)
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('vagas_total')
                                     ->label('Total de Vagas')
-                                    ->required(true),
+                                    ->required(false),
                                 Forms\Components\TextInput::make('vagas_externa')
                                     ->label('Vagas Externas')
                                     ->hint('Sugerimos que pelo menos 20% das vagas sejam ofertadas ao público externo.')
-                                    ->required(true),
+                                    ->required(false),
                                 Forms\Components\TextInput::make('local')
-                                    ->required(true)
+                                    ->required(false)
                                     ->maxLength(255),
                                 Forms\Components\DatePicker::make('data_inicio')
                                     ->label('Data Início')
                                     ->closeOnDateSelection()
-                                    ->required(true),
+                                    ->required(false),
                                 Forms\Components\DatePicker::make('data_encerramento')
                                     ->label('Data Encerramento')
                                     ->closeOnDateSelection()
-                                    ->required(true),
+                                    ->required(false),
                                 Forms\Components\TimePicker::make('hora_inicio')
                                     ->label('Hora Início')
                                     ->seconds(false)
-                                    ->required(true),
+                                    ->required(false),
                                 Forms\Components\TimePicker::make('hora_encerramento')
                                     ->label('Hora Encerramento')
                                     ->seconds(false)
-                                    ->required(true),
+                                    ->required(false),
                                 
                                     
                                 Forms\Components\TextInput::make('carga_hr_semanal')
                                     ->placeholder('HH:mm')
                                     ->label('Carga Horária Semanal')
                                     ->mask('99:99')
-                                    ->required(true),
+                                    ->required(false),
                                 Forms\Components\TextInput::make('carga_hr_total')
                                     ->placeholder('HH:mm')
                                     ->label('Carga Horária Total')
                                     ->mask('99:99')
-                                    ->required(true),
+                                    ->required(false),
                             Fieldset::make('Período')
                                 ->schema([
                                     Grid::make([
@@ -190,23 +190,23 @@ class AcaoResource extends Resource
                                                     '6' => 'Sábado',
                                                     '7' => 'Domingo',
                                                 ])
-                                            ->required(true),
+                                            ->required(false),
                                             Forms\Components\Radio::make('periocidade')
-                                                        ->required(true)
+                                                        ->required(false)
                                                         ->options([
                                                             '1' => 'Mensal',
                                                             '2' => 'Trimestral',
                                                             '3' => 'Semestral/Anual',
                                                         ]),
                                             Forms\Components\Radio::make('modalidade')
-                                                        ->required(true)
+                                                        ->required(false)
                                                         ->options([
                                                             '1' => 'Presencial',
                                                             '2' => 'EAD',
                                                             '3' => 'Semipresencial',
                                                         ]),
                                             Forms\Components\Radio::make('turno')
-                                                        ->required(true)
+                                                        ->required(false)
                                                         ->options([
                                                             '1' => 'Matutino',
                                                             '2' => 'Vespertino',
@@ -214,7 +214,7 @@ class AcaoResource extends Resource
                                                         ]),
                                             Forms\Components\Radio::make('duracao_aula')
                                                         ->label('Duração da Aula')
-                                                        ->required(true)
+                                                        ->required(false)
                                                         ->options([
                                                             '1' => '45 min',
                                                             '2' => '50 min',
@@ -239,7 +239,7 @@ class AcaoResource extends Resource
                                     ])
                                     ->label('Críterio de Aprovação')
                                     ->native(false)
-                                    ->required(true),
+                                    ->required(false),
                                     
                                 Forms\Components\Select::make('frequencia_minima')
                                     ->options([
@@ -249,7 +249,7 @@ class AcaoResource extends Resource
 
                                     ])
                                     ->label('Frequência Mínima')
-                                    ->required(true),
+                                    ->required(false),
                                    
                                 Forms\Components\Select::make('media_aprovacao')
                                     ->options([
@@ -260,11 +260,11 @@ class AcaoResource extends Resource
                                     ])
                                     ->label('Média de Aprovação')
                                     ->native(false)
-                                    ->required(true),
+                                    ->required(false),
                                     
                                 Forms\Components\TextInput::make('forma_avaliacao')
                                     ->label('Forma de Avaliação')
-                                    ->required(true)
+                                    ->required(false)
                                     ->maxLength(255),
                          ])->columns(2),
             ]),
@@ -274,19 +274,19 @@ class AcaoResource extends Resource
                         ->description('Demais Informações')
                          ->schema([
                                 Forms\Components\Textarea::make('requisitos')
-                                    ->required(true),
+                                    ->required(false),
                                 Forms\Components\Textarea::make('justificativa')
-                                    ->required(true),
+                                    ->required(false),
                                 Forms\Components\Textarea::make('objetivo_geral')
                                     ->label('Objetivo Geral')
-                                    ->required(true),
+                                    ->required(false),
                                 Forms\Components\Textarea::make('objetivo_especifico')
                                     ->label('Objetivo Específicos')
-                                    ->required(true),
+                                    ->required(false),
                                 Forms\Components\Textarea::make('metodologia')
-                                    ->required(true),
+                                    ->required(false),
                                 Forms\Components\Textarea::make('bibliografia')
-                                    ->required(true),
+                                    ->required(false),
                                 Forms\Components\Textarea::make('outras_informacoes')
                                     ->label('Outras Informações')
                                     ->required(false)
@@ -311,7 +311,7 @@ class AcaoResource extends Resource
                             ->schema([
                                     Forms\Components\Radio::make('status')
                                                         ->label('Situação da Proposta')
-                                                        ->required(true)
+                                                        ->required(false)
                                                         ->live()
                                                         ->options([
                                                             '1' => 'Em Análise',
@@ -499,7 +499,7 @@ class AcaoResource extends Resource
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->emptyStateActions([
