@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class InscricaoStatus extends Mailable
+class CertificadoNaoAprovadoParticipante extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -20,14 +20,13 @@ class InscricaoStatus extends Mailable
     public function __construct(protected Inscricao $inscricao)
      {}
 
-
     /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Situação da sua inscrição',
+            subject: 'Certificado Não Aprovado',
         );
     }
 
@@ -35,8 +34,8 @@ class InscricaoStatus extends Mailable
      * Get the message content definition.
      */
     public function content(): Content
-    { 
-      //  dd($this->inscricao->inscricao_tipo);
+    {
+        
         if($this->inscricao->inscricao_tipo == 1){
             $nomeInscrito = $this->inscricao->discente->name;
         }
@@ -46,16 +45,33 @@ class InscricaoStatus extends Mailable
         if($this->inscricao->inscricao_tipo == 3){
             $nomeInscrito = $this->inscricao->nome;
         }
-        
 
-        
+        //MOTIVO REPROVAÇÃO
+       
+        if($this->inscricao->motivo_reprovacao == 1){
+            $motivoReprovacao = 'Falta';
+        }
+        if($this->inscricao->motivo_reprovacao == 2){
+            $motivoReprovacao = 'Não Aproveitamento';
+        }
+        if($this->inscricao->motivo_reprovacao == 3){
+            $motivoReprovacao = 'Desistência';
+        }
+        if($this->inscricao->motivo_reprovacao == 4){
+            $motivoReprovacao = 'Evasão';
+        }
+       
+
+
         return new Content(
-            view: 'email.InscricaoStatus',
+            view: 'email.CertificadoNaoAprovadoParticipante',
             
 
             with: [
-                'titulo' => $this->inscricao->acao->titulo,
-                'nomeInscrito' => $nomeInscrito,     
+               'titulo' => $this->inscricao->acao->titulo,
+                'nomeInscrito' => $nomeInscrito,
+              //  'motivoReprovacao' => $motivoReprovacao,
+
             ],
         );
     }

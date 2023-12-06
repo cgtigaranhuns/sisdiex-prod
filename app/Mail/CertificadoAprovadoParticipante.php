@@ -10,7 +10,7 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class InscricaoStatus extends Mailable
+class CertificadoAprovadoParticipante extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -20,14 +20,13 @@ class InscricaoStatus extends Mailable
     public function __construct(protected Inscricao $inscricao)
      {}
 
-
     /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Situação da sua inscrição',
+            subject: 'Certificado Liberado',
         );
     }
 
@@ -35,8 +34,7 @@ class InscricaoStatus extends Mailable
      * Get the message content definition.
      */
     public function content(): Content
-    { 
-      //  dd($this->inscricao->inscricao_tipo);
+    {
         if($this->inscricao->inscricao_tipo == 1){
             $nomeInscrito = $this->inscricao->discente->name;
         }
@@ -46,15 +44,13 @@ class InscricaoStatus extends Mailable
         if($this->inscricao->inscricao_tipo == 3){
             $nomeInscrito = $this->inscricao->nome;
         }
-        
 
-        
         return new Content(
-            view: 'email.InscricaoStatus',
+            view: 'email.CertificadoAprovadoParticipante',
             
 
             with: [
-                'titulo' => $this->inscricao->acao->titulo,
+               'titulo' => $this->inscricao->acao->titulo,
                 'nomeInscrito' => $nomeInscrito,     
             ],
         );

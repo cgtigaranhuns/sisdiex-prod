@@ -4,7 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\InscricaoResource\Pages;
 use App\Filament\Resources\InscricaoResource\RelationManagers;
+use App\Mail\CertificadoAprovadoParticipante;
+use App\Mail\CertificadoNaoAprovadoParticipante;
 use App\Mail\Inscricao as MailInscricao;
+use App\Mail\InscricaoRecusada;
 use App\Mail\InscricaoStatus;
 use App\Models\User;
 use App\Models\Acao;
@@ -33,7 +36,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Mail;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
- 
+
 
 class InscricaoResource extends Resource
 {
@@ -45,7 +48,7 @@ class InscricaoResource extends Resource
 
     protected static ?string $modelLabel = 'Inscrição';
 
-    
+
     public static function form(Form $form): Form
     {
         return $form
@@ -53,51 +56,51 @@ class InscricaoResource extends Resource
                 Section::make('Dados Pessoais')
                     ->description('Identificação')
                     ->schema([
-                            Section::make()
+                        Section::make()
                             ->schema([
                                 Forms\Components\Select::make('acao_id')
-                                        ->label('Ação/Evento')
-                                        ->required(false)
-                                        ->searchable()
-                                        ->options(Acao::all()->pluck('titulo', 'id')->toArray()),
-                               Radio::make('inscricao_tipo')
-                                        ->label('Tipo de Inscrição')
-                                        ->options([
-                                            '1' => 'Discente - IFPE - Campus Garanhuns',
-                                            '2' => 'Servidor - IFPE - Campus Garanhuns',
-                                            '3' => 'Externo - IFPE - Campus Garanhuns',
-                                        ]),                                        
+                                    ->label('Ação/Evento')
+                                    ->required(false)
+                                    ->searchable()
+                                    ->options(Acao::all()->pluck('titulo', 'id')->toArray()),
+                                Radio::make('inscricao_tipo')
+                                    ->label('Tipo de Inscrição')
+                                    ->options([
+                                        '1' => 'Discente - IFPE - Campus Garanhuns',
+                                        '2' => 'Servidor - IFPE - Campus Garanhuns',
+                                        '3' => 'Externo - IFPE - Campus Garanhuns',
+                                    ]),
                                 Forms\Components\Select::make('user_id')
-                                        ->label('Servidor - IFPE - Campus Garanhuns')
-                                        ->required(false)
-                                        ->searchable()
-                                        ->options(User::all()->pluck('name', 'id')->toArray()), 
+                                    ->label('Servidor - IFPE - Campus Garanhuns')
+                                    ->required(false)
+                                    ->searchable()
+                                    ->options(User::all()->pluck('name', 'id')->toArray()),
                                 Forms\Components\TextInput::make('cpf')
-                                        ->mask('999.999.999-99')
-                                        ->label('CPF'), 
+                                    ->mask('999.999.999-99')
+                                    ->label('CPF'),
                                 Forms\Components\Select::make('discente_id')
-                                        ->label('Discente - IFPE - Campus Garanhuns')
-                                        ->required(false)
-                                        ->searchable()
-                                        ->getSearchResultsUsing(fn (string $search): array => Discente::where('username', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                                        ->getOptionLabelUsing(fn ($value): ?string => Discente::find($value)?->name),
-                                       //->options(Discente::all()->pluck('username', 'id')->toArray()), 
+                                    ->label('Discente - IFPE - Campus Garanhuns')
+                                    ->required(false)
+                                    ->searchable()
+                                    ->getSearchResultsUsing(fn (string $search): array => Discente::where('username', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
+                                    ->getOptionLabelUsing(fn ($value): ?string => Discente::find($value)?->name),
+                                //->options(Discente::all()->pluck('username', 'id')->toArray()), 
                                 Forms\Components\TextInput::make('nome')
                                     ->label('Externo - IFPE - Campus Garanhuns')
                                     ->required(false)
-                                    ->maxLength(255), 
+                                    ->maxLength(255),
                                 Forms\Components\TextInput::make('telefone')
                                     ->required(false)
                                     ->mask('(99)99999-9999')
-                                    ->tel(), 
+                                    ->tel(),
                                 Forms\Components\TextInput::make('email')
                                     ->email()
                                     ->required(false)
-                                    ->maxLength(255), 
+                                    ->maxLength(255),
                                 Forms\Components\TextInput::make('instituicao_origem')
                                     ->label('Instituição de Origem')
                                     ->required(false)
-                                    ->maxLength(255), 
+                                    ->maxLength(255),
                                 Forms\Components\Select::make('escolaridade')
                                     ->label('Escolaridade')
                                     ->required(false)
@@ -115,7 +118,7 @@ class InscricaoResource extends Resource
                                         '10' => 'Pós-Graduado',
                                         '11' => 'Mestrado',
                                         '12' => 'Doutorado',
-                                        
+
 
                                     ]),
                                 Forms\Components\DatePicker::make('data_nascimento')
@@ -139,113 +142,105 @@ class InscricaoResource extends Resource
                                         '4' => 'Amarela',
                                         '5' => 'Indígena',
                                         '6' => 'Não Declarar',
-                                    ]),  
-                        ])->columnSpanFull() 
+                                    ]),
+                            ])->columnSpanFull()
                     ]),
-                    Section::make('Análise da Inscrição')
-                        ->description('Status')
-                             ->schema([
-                                    Section::make()
-                                        ->schema([    
-                                            Radio::make('inscricao_status')
-                                                ->label('Situação da Inscrição')
-                                                ->required(false)
-                                                ->live()
-                                                ->options([
-                                                    '1' => 'Em Análise',
-                                                    '2' => 'Efetivada',
-                                                    '3' => 'Não Efetivada',
-                                                ])
-                                                ->afterStateUpdated(function($state, Inscricao $inscricao, $record){
-                                                  //  $acao = Acao::find($record->acao_id);
-                                                    //  dd($this->data['status']);
-                                                    if($state == 2)  {          
-                                                      /*  Mail::send('Sua inscrição para o Evento/Ação: '.$record->acao->titulo.', está confirmada.', function($msg, Get $get) {
-                                                       $msg->to($get('email'))->subject('Inscrição confirmada'); 
-                                                        
-                                                    }); */
-                                                    Mail::to($record->email)->send(new InscricaoStatus($inscricao));
-                                                    }
-                                                    elseif($state == 3)  {          
-                                                        Mail::raw('Sua inscrição para o Evento/Ação: '.$record->acao->titulo.', foi recusada. Entre em contato com a Divisão de 
-                                                        Extensão (DIEX), para mais informações. Email: diex@garanhuns.ifpe.edu.br', function($msg, $record) {
-                                                        $msg->to($this->$record->email)->subject('Inscrição recusada');  
-                                                
-                                                        }); 
-                                                   }
-                                                
-                                                })
-                                                ->default('1'),
-                                                
-                                           
-                                            Radio::make('aprovacao_status')
-                                                ->label('Aprovação')
-                                                ->required(false)
-                                                ->reactive()
-                                                ->options([
-                                                    '1' => 'Em Análise',
-                                                    '2' => 'Aprovado',
-                                                    '3' => 'Reprovado',
-                                                ])
-                                                ->default('1')
-                                                ->afterStateUpdated(function (Get $get, Set $set) {
-                                                                                                     
-                                                    if($get('aprovacao_status') == 2) {
-                                                        
-                                                        $set('certificado_cod', random_int(1000000000, 9999999999));
-                                                        $set('certificado_data', Carbon::now()->format('d/m/Y'));
-                                                    } 
-                                                    if($get('aprovacao_status') <> 2) {
-                                                        
-                                                        $set('certificado_cod', '');
-                                                        $set('certificado_data', '');
-                                                    } 
-                                                }), 
-                                                
-                                            
-                                            Forms\Components\TextInput::make('nota')
-                                                ->required(false)
-                                                ->maxLength(255),
-                                            
-                                            Radio::make('motivo_reprovacao')
-                                                ->label('Motivo da Reprovação')
-                                                ->options([
-                                                    '1' => 'Falta',
-                                                    '2' => 'Não Aproveitamento',
-                                                    '3' => 'Desistência',
-                                                    '4' => 'Evasão',
-                                                    
-                                                ]), 
-                                                
-                                            Forms\Components\TextInput::make('certificado_cod')
-                                                ->label('Código do Certificado')
-                                                ->readOnly(),
-                                            Forms\Components\TextInput::make('certificado_data')
-                                                ->label('Data do Certificado')
-                                                ->readOnly(),
-                                               
-                                            Forms\Components\Textarea::make('obs')
-                                                ->label('Observação')
-                                                ->required(false)
-                                                ->columnSpanFull(),
-                                           
-                                           
-                                    ])->columns(2)
-                                ]),
-                ]);
+                Section::make('Análise da Inscrição')
+                    ->description('Status')
+                    ->schema([
+                        Section::make()
+                            ->schema([
+                                Radio::make('inscricao_status')
+                                    ->label('Situação da Inscrição')
+                                    ->required(false)
+                                    ->live()
+                                    ->options([
+                                        '1' => 'Em Análise',
+                                        '2' => 'Efetivada',
+                                        '3' => 'Não Efetivada',
+                                    ])
+                                    ->afterStateUpdated(function ($state, Inscricao $inscricao, $record) {
+                                        if ($state == 2) {
+                                            Mail::to($record->email)->send(new InscricaoStatus($inscricao));
+                                        } elseif ($state == 3) {
+                                            Mail::to($record->email)->send(new InscricaoRecusada($inscricao));
+                                        }
+                                    })
+                                    ->default('1'),
+
+
+                                Radio::make('aprovacao_status')
+                                    ->label('Aprovação')
+                                    ->required(false)
+                                    ->live()
+                                    ->options([
+                                        '1' => 'Em Análise',
+                                        '2' => 'Aprovado',
+                                        '3' => 'Reprovado',
+                                    ])
+                                    ->default('1')
+                                    ->afterStateUpdated(function (Get $get, Set $set, $record, Inscricao $inscricao) {
+
+                                        if ($get('aprovacao_status') == 2) {
+
+                                            $set('certificado_cod', random_int(1000000000, 9999999999));
+                                            $set('certificado_data', Carbon::now()->format('d/m/Y'));
+                                            Mail::to($record->email)->send(new CertificadoAprovadoParticipante($inscricao));
+                                        }
+                                        if ($get('aprovacao_status') <> 2) {
+                                            $set('certificado_cod', '');
+                                            $set('certificado_data', '');
+                                        }
+                                    }),
+
+
+                                Forms\Components\TextInput::make('nota')
+                                    ->required(false)
+                                    ->maxLength(255),
+
+                                Radio::make('motivo_reprovacao')
+                                    ->label('Motivo da Reprovação')
+                                    ->live()
+                                    ->options([
+                                        '1' => 'Falta',
+                                        '2' => 'Não Aproveitamento',
+                                        '3' => 'Desistência',
+                                        '4' => 'Evasão',
+
+                                    ])
+                                    ->afterStateUpdated(function ($record, Inscricao $inscricao) {
+                                      //  Mail::to($record->email)->send(new CertificadoNaoAprovadoParticipante($inscricao));
+                                    }),
+
+                                Forms\Components\TextInput::make('certificado_cod')
+                                    ->label('Código do Certificado')
+                                    ->readOnly(),
+                                Forms\Components\TextInput::make('certificado_data')
+                                    ->label('Data do Certificado')
+                                    ->readOnly(),
+
+                                Forms\Components\Textarea::make('obs')
+                                    ->label('Observação')
+                                    ->required(false)
+                                    ->columnSpanFull(),
+
+
+                            ])->columns(2)
+                    ]),
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
-        ->striped()
-        ->defaultSort('id','desc')
+            ->striped()
+            ->defaultSort('id', 'desc')
             ->groups([
                 Group::make('acao.titulo')
-                ->label('Ação/Evento')
-                ->collapsible()
-                ->orderQueryUsing(fn (Builder $query, string $direction) => $query->orderBy('id', $direction)),
-                
+                    ->label('Ação/Evento')
+                    ->collapsible()
+                    ->orderQueryUsing(fn (Builder $query, string $direction) => $query->orderBy('id', $direction)),
+
             ])
             ->columns([
                 Tables\Columns\TextColumn::make('id')
@@ -280,13 +275,13 @@ class InscricaoResource extends Resource
                         '3' => 'danger',
                     }),
                 Tables\Columns\SelectColumn::make('inscricao_tipo')
-                        ->label('Tipo de Inscrição')
-                        ->disabled()
-                        ->options([
-                            '1' => 'Discente - IFPE - Campus Garanhuns',
-                            '2' => 'Servidor - IFPE - Campus Garanhuns',
-                            '3' => 'Externo - IFPE - Campus Garanhuns',
-                        ]),
+                    ->label('Tipo de Inscrição')
+                    ->disabled()
+                    ->options([
+                        '1' => 'Discente - IFPE - Campus Garanhuns',
+                        '2' => 'Servidor - IFPE - Campus Garanhuns',
+                        '3' => 'Externo - IFPE - Campus Garanhuns',
+                    ]),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Servidor'),
                 Tables\Columns\TextColumn::make('discente.name'),
@@ -309,9 +304,9 @@ class InscricaoResource extends Resource
             ])
             ->filters([
                 Filter::make('Inscrições em Análise')
-                ->query(fn (Builder $query): Builder => $query->where('inscricao_status', 1)),
-                 SelectFilter::make('Evento/Ação')->relationship('acao', 'titulo'),
-                 Tables\Filters\Filter::make('data_inicio')
+                    ->query(fn (Builder $query): Builder => $query->where('inscricao_status', 1)),
+                SelectFilter::make('Evento/Ação')->relationship('acao', 'titulo'),
+                Tables\Filters\Filter::make('data_inicio')
                     ->form([
                         Forms\Components\DatePicker::make('inicio_de')
                             ->label('Início de:'),
@@ -320,15 +315,19 @@ class InscricaoResource extends Resource
                     ])
                     ->query(function ($query, array $data) {
                         return $query
-                            ->when($data['inicio_de'],
-                                fn($query) => $query->whereDate('data_inicio', '>=', $data['inicio_de']))
-                            ->when($data['inicio_ate'],
-                                fn($query) => $query->whereDate('data_inicio', '<=', $data['inicio_ate']));
+                            ->when(
+                                $data['inicio_de'],
+                                fn ($query) => $query->whereDate('data_inicio', '>=', $data['inicio_de'])
+                            )
+                            ->when(
+                                $data['inicio_ate'],
+                                fn ($query) => $query->whereDate('data_inicio', '<=', $data['inicio_ate'])
+                            );
                     })
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -339,16 +338,15 @@ class InscricaoResource extends Resource
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
             ]);
-            
     }
-    
+
     public static function getRelations(): array
     {
         return [
             //
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -356,5 +354,5 @@ class InscricaoResource extends Resource
             'create' => Pages\CreateInscricao::route('/create'),
             'edit' => Pages\EditInscricao::route('/{record}/edit'),
         ];
-    }    
+    }
 }
