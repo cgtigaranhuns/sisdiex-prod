@@ -16,14 +16,15 @@ class CreateAcao extends CreateRecord
 
     protected static ?string $title = 'Criar proposta de evento/ação';
 
-    protected function beforeCreate(): void
+    protected function afterCreate(): void
     {
+      //  dd($this->record->user->name);
                     
-        Mail::raw('Sua proposta para o Evento/Ação: '.$this->data['titulo'].', está em análise.', function($msg) {
+        Mail::raw('Olá '.$this->record->user->name.', sua proposta para o Evento/Ação: '.$this->data['titulo'].', está em análise.', function($msg) {
             $msg->to(auth()->user()->email)->subject('Proposta em análise'); 
         }); 
 
-        Mail::raw('Uma proposta para Evento/Ação: '.$this->data['titulo'].', foi cadastrada.', function($msg) {
+        Mail::raw('Uma proposta de '.$this->record->user->name.' para Evento/Ação: '.$this->data['titulo'].', foi cadastrada.', function($msg) {
             $msg->to('wellington.cavalcante@garanhuns.ifpe.edu.br')->subject('Proposta cadastrada'); 
           
         }); 

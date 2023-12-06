@@ -43,59 +43,51 @@ class AcaoResource extends Resource
     {
         /** @var \App\Models\User */
         $authUser =  auth()->user();
-                                                    
-        if($authUser->hasRole('Administrador'))
-        {
-            return parent::getEloquentQuery(); 
-            
+
+        if ($authUser->hasRole('Administrador')) {
+            return parent::getEloquentQuery();
+        } elseif (!$authUser->hasRole('Administrador')) {
+            return parent::getEloquentQuery()->where('user_id', '=', auth()->user()->id);
         }
-        elseif(!$authUser->hasRole('Administrador'))
-        {
-            return parent::getEloquentQuery()->where('user_id','=', auth()->user()->id);
-        }
-    } 
+    }
 
     public static function form(Form $form): Form
     {
         return $form
-        ->schema([
-            Section::make('Cadastro da Ação')
-                ->description('Dados Básicos')
-                ->schema([
+            ->schema([
+                Section::make('Cadastro da Ação')
+                    ->description('Dados Básicos')
+                    ->schema([
                         Section::make()
-                        ->schema([
+                            ->schema([
                                 Forms\Components\TextInput::make('titulo')
                                     ->label('Título')
                                     ->required(false)
                                     ->columnSpanFull()
                                     ->maxLength(255),
 
-                            
-                                        Forms\Components\Select::make('user_id')
-                                            ->label('Proponente')
-                                            ->required(false)
-                                            ->native(false)
-                                            ->default(auth()->user()->id)
-                                            ->searchable()
-                                            ->options(function () {
-                                                    /** @var \App\Models\User */
-                                                    $authUser =  auth()->user();
-                                                    
-                                                    if($authUser->hasRole('Administrador'))
-                                                    {
-                                                       return User::all()->pluck('name', 'id')->toArray();
-                                                    }
-                                                    else 
-                                                    {
-                                                        
-                                                       return User::where('id',auth()->user()->id)->pluck('name', 'id')->toArray();
-                                                    }  
 
-                                                    
-                                               }
-                                            ),
-                                
-                                                  
+                                Forms\Components\Select::make('user_id')
+                                    ->label('Proponente')
+                                    ->required(false)
+                                    ->native(false)
+                                    ->default(auth()->user()->id)
+                                    ->searchable()
+                                    ->options(
+                                        function () {
+                                            /** @var \App\Models\User */
+                                            $authUser =  auth()->user();
+
+                                            if ($authUser->hasRole('Administrador')) {
+                                                return User::all()->pluck('name', 'id')->toArray();
+                                            } else {
+
+                                                return User::where('id', auth()->user()->id)->pluck('name', 'id')->toArray();
+                                            }
+                                        }
+                                    ),
+
+
                                 Forms\Components\Select::make('area_conhecimento_id')
                                     ->preload()
                                     ->native(false)
@@ -159,8 +151,8 @@ class AcaoResource extends Resource
                                     ->label('Hora Encerramento')
                                     ->seconds(false)
                                     ->required(false),
-                                
-                                    
+
+
                                 Forms\Components\TextInput::make('carga_hr_semanal')
                                     ->placeholder('HH:mm')
                                     ->label('Carga Horária Semanal')
@@ -171,65 +163,65 @@ class AcaoResource extends Resource
                                     ->label('Carga Horária Total')
                                     ->mask('99:99')
                                     ->required(false),
-                            Fieldset::make('Período')
-                                ->schema([
-                                    Grid::make([
-                                        'sm' => 2,
-                                        'xl' => 5,
-                                    ])
-                                        
-                                        ->schema([
-                                             Forms\Components\CheckboxList::make('dias_semana')
-                                                ->label('Dias da Semana')
-                                                ->options([
-                                                    '1' => 'Segunda-Feira',
-                                                    '2' => 'Terça-Feira',
-                                                    '3' => 'Quarta-Feira',
-                                                    '4' => 'Quinta-Feira',
-                                                    '5' => 'Sexta-Feira',
-                                                    '6' => 'Sábado',
-                                                    '7' => 'Domingo',
-                                                ])
-                                            ->required(false),
-                                            Forms\Components\Radio::make('periocidade')
-                                                        ->required(false)
-                                                        ->options([
-                                                            '1' => 'Mensal',
-                                                            '2' => 'Trimestral',
-                                                            '3' => 'Semestral/Anual',
-                                                        ]),
-                                            Forms\Components\Radio::make('modalidade')
-                                                        ->required(false)
-                                                        ->options([
-                                                            '1' => 'Presencial',
-                                                            '2' => 'EAD',
-                                                            '3' => 'Semipresencial',
-                                                        ]),
-                                            Forms\Components\Radio::make('turno')
-                                                        ->required(false)
-                                                        ->options([
-                                                            '1' => 'Matutino',
-                                                            '2' => 'Vespertino',
-                                                            '3' => 'Noturno/Integral',
-                                                        ]),
-                                            Forms\Components\Radio::make('duracao_aula')
-                                                        ->label('Duração da Aula')
-                                                        ->required(false)
-                                                        ->options([
-                                                            '1' => '45 min',
-                                                            '2' => '50 min',
-                                                            '3' => '60 min',
-                                                        ]), 
+                                Fieldset::make('Período')
+                                    ->schema([
+                                        Grid::make([
+                                            'sm' => 2,
+                                            'xl' => 5,
                                         ])
-                            ])->columnSpanFull()
-                        ])->columns(2),
+
+                                            ->schema([
+                                                Forms\Components\CheckboxList::make('dias_semana')
+                                                    ->label('Dias da Semana')
+                                                    ->options([
+                                                        '1' => 'Segunda-Feira',
+                                                        '2' => 'Terça-Feira',
+                                                        '3' => 'Quarta-Feira',
+                                                        '4' => 'Quinta-Feira',
+                                                        '5' => 'Sexta-Feira',
+                                                        '6' => 'Sábado',
+                                                        '7' => 'Domingo',
+                                                    ])
+                                                    ->required(false),
+                                                Forms\Components\Radio::make('periocidade')
+                                                    ->required(false)
+                                                    ->options([
+                                                        '1' => 'Mensal',
+                                                        '2' => 'Trimestral',
+                                                        '3' => 'Semestral/Anual',
+                                                    ]),
+                                                Forms\Components\Radio::make('modalidade')
+                                                    ->required(false)
+                                                    ->options([
+                                                        '1' => 'Presencial',
+                                                        '2' => 'EAD',
+                                                        '3' => 'Semipresencial',
+                                                    ]),
+                                                Forms\Components\Radio::make('turno')
+                                                    ->required(false)
+                                                    ->options([
+                                                        '1' => 'Matutino',
+                                                        '2' => 'Vespertino',
+                                                        '3' => 'Noturno/Integral',
+                                                    ]),
+                                                Forms\Components\Radio::make('duracao_aula')
+                                                    ->label('Duração da Aula')
+                                                    ->required(false)
+                                                    ->options([
+                                                        '1' => '45 min',
+                                                        '2' => '50 min',
+                                                        '3' => '60 min',
+                                                    ]),
+                                            ])
+                                    ])->columnSpanFull()
+                            ])->columns(2),
                     ]),
-            
-            Fieldset::make()
-                ->schema([
-                    Section::make('Cadastro da Ação')
-                        ->description('Critérios de Avaliação')
-                         ->schema([
+
+                Fieldset::make()
+                    ->schema([
+                        Section::make('Cadastro da Ação')
+                            ->description('Critérios de Avaliação')
+                            ->schema([
                                 Forms\Components\Select::make('criterio_aprovacao')
                                     ->options([
                                         '1' => 'Somente por frequência',
@@ -240,7 +232,7 @@ class AcaoResource extends Resource
                                     ->label('Críterio de Aprovação')
                                     ->native(false)
                                     ->required(false),
-                                    
+
                                 Forms\Components\Select::make('frequencia_minima')
                                     ->options([
                                         '1' => '70%',
@@ -250,7 +242,7 @@ class AcaoResource extends Resource
                                     ])
                                     ->label('Frequência Mínima')
                                     ->required(false),
-                                   
+
                                 Forms\Components\Select::make('media_aprovacao')
                                     ->options([
                                         '1' => '6.0',
@@ -261,18 +253,18 @@ class AcaoResource extends Resource
                                     ->label('Média de Aprovação')
                                     ->native(false)
                                     ->required(false),
-                                    
+
                                 Forms\Components\TextInput::make('forma_avaliacao')
                                     ->label('Forma de Avaliação')
                                     ->required(false)
                                     ->maxLength(255),
-                         ])->columns(2),
-            ]),
-            Fieldset::make()
-                ->schema([
-                    Section::make('Cadastro da Ação')
-                        ->description('Demais Informações')
-                         ->schema([
+                            ])->columns(2),
+                    ]),
+                Fieldset::make()
+                    ->schema([
+                        Section::make('Cadastro da Ação')
+                            ->description('Demais Informações')
+                            ->schema([
                                 Forms\Components\Textarea::make('requisitos')
                                     ->required(false),
                                 Forms\Components\Textarea::make('justificativa')
@@ -290,127 +282,146 @@ class AcaoResource extends Resource
                                 Forms\Components\Textarea::make('outras_informacoes')
                                     ->label('Outras Informações')
                                     ->required(false)
-                                    ->columnSpan('full'), 
-                        ])->columns(2), 
+                                    ->columnSpan('full'),
+                            ])->columns(2),
 
                         Fieldset::make('Aprovação da Ação/Evento')
-                                ->hidden(function () {
+                            ->hidden(
+                                function () {
                                     /** @var \App\Models\User */
                                     $authUser =  auth()->user();
-                                    
-                                    if($authUser->hasRole('Administrador'))
-                                    {
-                                       return false;
-                                    }
-                                    else 
-                                    {
-                                       return true;
-                                    }  
-                                 }
-                             )
-                            ->schema([
-                                    Forms\Components\Radio::make('status')
-                                                        ->label('Situação da Proposta')
-                                                        ->required(false)
-                                                        ->live()
-                                                        ->options([
-                                                            '1' => 'Em Análise',
-                                                            '2' => 'Efetivada',
-                                                            '3' => 'Não Efetivada',
-                                                        ])
-                                                        ->default('1'),
-                                    Forms\Components\Textarea::make('status_justifique')
-                                                        ->columnSpan('2')
-                                                        ->label('Justificativa')
-                                                        ->hidden(fn (Get $get) => $get('status') != '3'),
-                                                        
-                                    Forms\Components\DatePicker::make('data_inicio_inscricoes')
-                                                       ->closeOnDateSelection()
-                                                        ->label('Início das Incrições')
-                                                        ->hidden(fn (Get $get) => $get('status') == '3')
-                                                        ->required(false),
-                                    Forms\Components\DatePicker::make('data_fim_inscricoes')
-                                                        ->closeOnDateSelection()
-                                                        ->label('Encerramento das Incrições')
-                                                        ->hidden(fn (Get $get) => $get('status') == '3')
-                                                        ->required(false),
-                                    Forms\Components\Radio::make('doacao')
-                                                        ->label('Doação')
-                                                        ->required(false)
-                                                        ->live()
-                                                        ->options([
-                                                            '1' => 'Sim',
-                                                            '2' => 'Não',
-                                                            
-                                                        ]),
-                                    Forms\Components\TextInput::make('tipo_doacao')
-                                                        ->hidden(fn (Get $get): bool => $get('doacao') === null || $get('doacao') === '2')
-                                                        ->label('Tipo de Doação')
-                                                        ->columnSpanFull()
-                                                         ->required(false)
-                                                        ->maxLength(255),
-                                    Forms\Components\Radio::make('cota')
-                                                        ->label('Cotas')
-                                                        ->columnSpanFull()
-                                                        ->required(false)
-                                                        ->live()
-                                                        ->options([
-                                                            '1' => 'Sim',
-                                                            '2' => 'Não',
-                                                            
-                                                        ]),
-                                    Forms\Components\TextInput::make('cota_servidor')
-                                                        ->hidden(fn (Get $get): bool => $get('cota') === null || $get('cota') === '2')
-                                                        ->label('Cota para Servidor')
-                                                        ->required(false)
-                                                        ->maxLength(255),
-                                    Forms\Components\TextInput::make('cota_discente')
-                                                        ->hidden(fn (Get $get): bool => $get('cota') === null || $get('cota') === '2')
-                                                        ->label('Cota para Discente')
-                                                        ->required(false)
-                                                        ->maxLength(255),
-                                    Forms\Components\TextInput::make('cota_externo')
-                                                        ->hidden(fn (Get $get): bool => $get('cota') === null || $get('cota') === '2')
-                                                        ->label('Cota para Externo')
-                                                        ->required(false)
-                                                        ->maxLength(255),
-                                    
-                                    
-                
-                                    ])->columns(3)
-                            ])
 
-                       ]);
+                                    if ($authUser->hasRole('Administrador')) {
+                                        return false;
+                                    } else {
+                                        return true;
+                                    }
+                                }
+                            )
+                            ->schema([
+                                Forms\Components\Radio::make('status')
+                                    ->label('Situação da Proposta')
+                                    ->required(false)
+                                    ->live()
+                                    ->options([
+                                        '1' => 'Em Análise',
+                                        '2' => 'Efetivada',
+                                        '3' => 'Não Efetivada',
+                                    ])
+                                    ->default('1'),
+                                Forms\Components\Textarea::make('status_justifique')
+                                    ->columnSpan('2')
+                                    ->label('Justificativa')
+                                    ->hidden(fn (Get $get) => $get('status') != '3'),
+
+                                Forms\Components\DatePicker::make('data_inicio_inscricoes')
+                                    ->closeOnDateSelection()
+                                    ->label('Início das Incrições')
+                                    ->hidden(fn (Get $get) => $get('status') == '3')
+                                    ->required(false),
+                                Forms\Components\DatePicker::make('data_fim_inscricoes')
+                                    ->closeOnDateSelection()
+                                    ->label('Encerramento das Incrições')
+                                    ->hidden(fn (Get $get) => $get('status') == '3')
+                                    ->required(false),
+                                Forms\Components\Radio::make('doacao')
+                                    ->label('Doação')
+                                    ->required(false)
+                                    ->live()
+                                    ->options([
+                                        '1' => 'Sim',
+                                        '2' => 'Não',
+
+                                    ]),
+                                Forms\Components\TextInput::make('tipo_doacao')
+                                    ->hidden(fn (Get $get): bool => $get('doacao') === null || $get('doacao') === '2')
+                                    ->label('Tipo de Doação')
+                                    ->columnSpanFull()
+                                    ->required(false)
+                                    ->maxLength(255),
+                                Forms\Components\Radio::make('cota')
+                                    ->label('Cotas')
+                                    ->columnSpanFull()
+                                    ->required(false)
+                                    ->live()
+                                    ->options([
+                                        '1' => 'Sim',
+                                        '2' => 'Não',
+
+                                    ]),
+                                Forms\Components\TextInput::make('cota_servidor')
+                                    ->hidden(fn (Get $get): bool => $get('cota') === null || $get('cota') === '2')
+                                    ->label('Cota para Servidor')
+                                    ->required(false)
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('cota_discente')
+                                    ->hidden(fn (Get $get): bool => $get('cota') === null || $get('cota') === '2')
+                                    ->label('Cota para Discente')
+                                    ->required(false)
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('cota_externo')
+                                    ->hidden(fn (Get $get): bool => $get('cota') === null || $get('cota') === '2')
+                                    ->label('Cota para Externo')
+                                    ->required(false)
+                                    ->maxLength(255),
+
+
+
+                            ])->columns(3)
+                    ])
+
+            ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->striped()
-            ->defaultSort('id','desc')
+            ->defaultSort('id', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id'),
                 Tables\Columns\TextColumn::make('titulo')
                     ->searchable()
                     ->label('Título'),
-                Tables\Columns\IconColumn::make('status')
+                /*   Tables\Columns\IconColumn::make('status')
                     ->alignCenter()
-                    ->label('Status')
+                   ->label('Status')
                     ->icon(fn (string $state): string => match ($state) {
                         '1' => 'heroicon-m-clock',
                         '2' => 'heroicon-m-check',
                         '3' => 'heroicon-m-trash',
-                    })
+                    }) 
                     ->color(fn (string $state): string => match ($state) {
                         '1' => 'warning',
                         '2' => 'success',
                         '3' => 'danger',
-                    }),
+                    }),  */
+                Tables\Columns\TextColumn::make('status')
+                    ->Label('Status da Proposta')
+                    ->badge()
+                    ->alignCenter()
+                    ->color(fn (string $state): string => match ($state) {
+                        '1' => 'warning',
+                        '2' => 'success',
+                        '3' => 'danger',
+                    })
+                    ->formatStateUsing(function($state){
+                        if($state == 1) {
+                            return 'Em Análise';
+                        }
+                        if($state == 2) {
+                            return 'Aprovada';
+                        }
+                        if($state == 3) {
+                            return 'Recusada';
+                        }
+                    }),  
+
                 Tables\Columns\TextColumn::make('user.name')
                     ->searchable()
                     ->label('Proponente'),
                 Tables\Columns\TextColumn::make('AreaConhecimento.nome')
-                     ->label('Área de Conhecimento'),
+                    ->label('Área de Conhecimento'),
                 Tables\Columns\TextColumn::make('AreaTematica.nome')
                     ->label('Área Temática'),
                 Tables\Columns\TextColumn::make('AreaExtensao.nome')
@@ -458,9 +469,9 @@ class AcaoResource extends Resource
             ])
             ->filters([
                 Filter::make('Em Análise')
-                ->query(fn (Builder $query): Builder => $query->where('status', 1)),
-                 SelectFilter::make('proponente')->relationship('user', 'name'),
-                 Tables\Filters\Filter::make('data_inicio')
+                    ->query(fn (Builder $query): Builder => $query->where('status', 1)),
+                SelectFilter::make('proponente')->relationship('user', 'name'),
+                Tables\Filters\Filter::make('data_inicio')
                     ->form([
                         Forms\Components\DatePicker::make('inicio_de')
                             ->label('Início de:'),
@@ -469,10 +480,14 @@ class AcaoResource extends Resource
                     ])
                     ->query(function ($query, array $data) {
                         return $query
-                            ->when($data['inicio_de'],
-                                fn($query) => $query->whereDate('data_inicio', '>=', $data['inicio_de']))
-                            ->when($data['inicio_ate'],
-                                fn($query) => $query->whereDate('data_inicio', '<=', $data['inicio_ate']));
+                            ->when(
+                                $data['inicio_de'],
+                                fn ($query) => $query->whereDate('data_inicio', '>=', $data['inicio_de'])
+                            )
+                            ->when(
+                                $data['inicio_ate'],
+                                fn ($query) => $query->whereDate('data_inicio', '<=', $data['inicio_ate'])
+                            );
                     })
             ])
             ->actions([
@@ -483,37 +498,34 @@ class AcaoResource extends Resource
                     ->hidden(function () {
                         /** @var \App\Models\User */
                         $authUser =  auth()->user();
-                        
-                        if($authUser->hasRole('Administrador'))
-                        {
-                           return false;
+
+                        if ($authUser->hasRole('Administrador')) {
+                            return false;
+                        } else {
+                            return true;
                         }
-                        else 
-                        {
-                           return true;
-                        }  
-                     })
+                    })
                     ->url(fn (Acao $record): string => route('imprimirFormQacademico', $record))
                     ->openUrlInNewTab(),
-                
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
             ]);
     }
-    
+
     public static function getRelations(): array
     {
         return [
             ConteudoProgramaticoRelationManager::class
         ];
     }
-    
+
     public static function getPages(): array
     {
         return [
@@ -521,5 +533,5 @@ class AcaoResource extends Resource
             'create' => Pages\CreateAcao::route('/create'),
             'edit' => Pages\EditAcao::route('/{record}/edit'),
         ];
-    }    
+    }
 }

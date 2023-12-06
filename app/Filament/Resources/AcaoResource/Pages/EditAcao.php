@@ -22,12 +22,12 @@ class EditAcao extends EditRecord
     {
       //  dd($this->data['status']);
         if($this->data['status'] == 2)  {          
-            Mail::raw('Sua proposta para o Evento/Ação: '.$this->data['titulo'].', foi aprovada.', function($msg) {
+            Mail::raw('Olá '.$this->record->user->name.', sua proposta para o Evento/Ação: '.$this->data['titulo'].', foi aprovada.', function($msg) {
             $msg->to([auth()->user()->email, 'wellington.cavalcante@garanhuns.ifpe.edu.br'])->subject('Proposta aprovada'); 
             
             }); 
         }elseif($this->data['status'] == 3)  {          
-            Mail::raw('Sua proposta para o Evento/Ação: '.$this->data['titulo'].', foi recusada, pelo motivo: '.$this->data['status_justifique'].'', function($msg) {
+            Mail::raw('Olá '.$this->record->user->name.', sua proposta para o Evento/Ação: '.$this->data['titulo'].', foi recusada, pelo motivo: '.$this->data['status_justifique'].'', function($msg) {
             $msg->to([auth()->user()->email, 'wellington.cavalcante@garanhuns.ifpe.edu.br'])->subject('Proposta recusada'); 
        
             }); 
