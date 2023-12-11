@@ -83,6 +83,11 @@ class Acao extends Model
         return $this->belongsTo(TipoAcao::class);
     }
 
+    public function Inscricao() {
+        return $this->hasMany(Inscricao::class);
+
+    }
+
     public function ConteudoProgramatico() {
         return $this->hasMany(ConteudoProgramatico::class);
 

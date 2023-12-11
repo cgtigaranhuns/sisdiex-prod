@@ -229,7 +229,7 @@
                              <td  style="text-align: center">
                                 {{\Carbon\Carbon::parse($cp->data_termino)->format('d/m/Y')}}
                              </td>
-                             <td>
+                             <td style="text-align: center">
                                 {{$cp->carga_horaria}}
                              </td>
                         

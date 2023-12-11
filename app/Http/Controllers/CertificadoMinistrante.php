@@ -13,13 +13,6 @@ class CertificadoMinistrante extends Controller
 
         $cp = ConteudoProgramatico::find($id);
 
-        //Nome do Inscrito
-
-        
-     //   $contProg = $acao->ConteudoProgramatico;
-       
-       
-
         return Pdf::loadView('pdf.CertificadoMinistrante', compact(['cp']))->setPaper('A4', 'landscape')->stream();
     }
 }
