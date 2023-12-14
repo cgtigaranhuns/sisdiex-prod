@@ -319,6 +319,8 @@ class InscricaoResource extends Resource
             ->filters([
                 Filter::make('Inscrições em Análise')
                     ->query(fn (Builder $query): Builder => $query->where('inscricao_status', 1)),
+                Filter::make('Inscrições em Aprovadas')
+                    ->query(fn (Builder $query): Builder => $query->where('inscricao_status', 2)),
                 SelectFilter::make('Evento/Ação')->relationship('acao', 'titulo'),
                 Tables\Filters\Filter::make('data_inicio')
                     ->form([
