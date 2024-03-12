@@ -25,7 +25,7 @@ class CreateAcao extends CreateRecord
         }); 
 
         Mail::raw('Uma proposta de '.$this->record->user->name.' para Evento/Ação: '.$this->data['titulo'].', foi cadastrada.', function($msg) {
-            $msg->to('wellington.cavalcante@garanhuns.ifpe.edu.br')->subject('Proposta cadastrada'); 
+            $msg->to('diex@garanhuns.ifpe.edu.br')->subject('Proposta cadastrada'); 
           
         }); 
     }
