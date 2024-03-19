@@ -51,7 +51,7 @@ class AcoesAtivas extends BaseWidget
                         return $acao->Inscricao->where('inscricao_status', 1)->count();
                     }),
                 Tables\Columns\TextColumn::make('Inscrições_efetivada')
-                    ->label('Inscrições Efetivada')
+                    ->label('Inscrições Efetivadas')
                     ->alignCenter()
                     ->default(function (Acao $acao) {
                         return $acao->Inscricao->where('inscricao_status', 2)->count();
