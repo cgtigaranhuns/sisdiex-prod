@@ -63,6 +63,35 @@ class FormQacademico extends Controller
             $periocidade = 'Noturno/Integral';
         }
 
+        //APROVAÇÃO
+
+        if($acao->criterio_aprovacao == 1) {
+            $aprovacao = 'Somente por frequência';
+        } if($acao->criterio_aprovacao == 2) {
+            $aprovacao = 'Somente por nota';
+        } if($acao->criterio_aprovacao == 3) {
+            $aprovacao = 'Frequência e nota';
+        }
+
+        //FREQUENCIA MÍNIMA
+        
+        if($acao->frequencia_minima == 1) {
+            $frequencia = '70%';
+        }  if($acao->frequencia_minima == 2) {
+            $frequencia = '75%';
+        }  if($acao->frequencia_minima == 3) {
+            $frequencia = '80%';
+        }
+
+        //MEDIA DE APROVAÇÃO
+        
+        if($acao->media_aprovacao == 1) {
+            $mediaAprovacao = '6.0';
+        }  if($acao->media_aprovacao == 2) {
+            $mediaAprovacao = '6.5';
+        }  if($acao->media_aprovacao == 3) {
+            $mediaAprovacao = '7.0';
+        }
 
      //    $contProg = ConteudoProgramatico::where('acao_id',$id)-;
 
@@ -76,6 +105,11 @@ class FormQacademico extends Controller
                                                             'modalidade',
                                                             'turno',
                                                             'periocidade',
+                                                            'aprovacao',
+                                                            'frequencia',
+                                                            'mediaAprovacao'
+
+
                                                     ]))->stream();
 
        

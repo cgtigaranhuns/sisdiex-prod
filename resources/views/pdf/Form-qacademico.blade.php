@@ -136,19 +136,19 @@
             <tr>
                <th>Critério de Aprovação</th>
                <td>
-                    {{ $acao->criterio_aprovacao }}
+                    {{ $aprovacao }}
                 </td>
             </tr>
             <tr>
                 <th>Frquência Mínima</th>
                 <td>
-                    {{ $acao->frequencia_minima }}
+                    {{ $frequencia }}
                 </td>
             </tr>
             <tr>
                 <th>Média de Aprovação</th>
                 <td>
-                    {{ $acao->media_aprovacao }}
+                    {{ $mediaAprovacao }}
                 </td>
             </tr>
             <tr>
