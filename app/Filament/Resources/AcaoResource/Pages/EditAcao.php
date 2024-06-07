@@ -11,10 +11,13 @@ class EditAcao extends EditRecord
 {
     protected static string $resource = AcaoResource::class;
 
+    protected static ?string $title = 'Editar Proposta';
+
     protected function getHeaderActions(): array
     {
         return [
             Actions\DeleteAction::make(),
+            
         ];
     }
 
