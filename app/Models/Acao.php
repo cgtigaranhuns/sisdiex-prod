@@ -56,6 +56,8 @@ class Acao extends Model
             'cota_servidor',
             'cota_discente',
             'cota_externo',
+            'status_comprovante',
+            'descricao_comprovante',
 
     ];
 

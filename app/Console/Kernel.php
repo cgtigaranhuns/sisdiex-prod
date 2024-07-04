@@ -12,6 +12,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
+        $schedule->exec('cp /var/www/html/sisdiex/sisdiex-prod-public/storage/app/public/* /var/www/html/sisdiex-prod/storage/app/public/')
+        ->everyMinute()
+        ->appendOutputTo(storage_path('logs/anexos.log'));
+
         $schedule->command('ldap:import labs', [
             '--no-interaction',
          ])

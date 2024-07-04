@@ -17,6 +17,7 @@ use Carbon\Carbon;
 use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -61,7 +62,7 @@ class InscricaoResource extends Resource
                                 Forms\Components\Select::make('acao_id')
                                     ->label('Ação/Evento')
                                     ->required(false)
-                                    ->searchable()
+                                    
                                     ->options(Acao::all()->pluck('titulo', 'id')->toArray()),
                                 Radio::make('inscricao_tipo')
                                     ->label('Tipo de Inscrição')
@@ -73,15 +74,16 @@ class InscricaoResource extends Resource
                                 Forms\Components\Select::make('user_id')
                                     ->label('Servidor - IFPE - Campus Garanhuns')
                                     ->required(false)
-                                    ->searchable()
+                                    
                                     ->options(User::all()->pluck('name', 'id')->toArray()),
                                 Forms\Components\TextInput::make('cpf')
                                     ->mask('999.999.999-99')
+                                    
                                     ->label('CPF'),
                                 Forms\Components\Select::make('discente_id')
                                     ->label('Discente - IFPE - Campus Garanhuns')
                                     ->required(false)
-                                    ->searchable()
+                                    
                                     ->getSearchResultsUsing(fn (string $search): array => Discente::where('username', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
                                     ->getOptionLabelUsing(fn ($value): ?string => Discente::find($value)?->name),
                                 //->options(Discente::all()->pluck('username', 'id')->toArray()), 
@@ -104,7 +106,7 @@ class InscricaoResource extends Resource
                                 Forms\Components\Select::make('escolaridade')
                                     ->label('Escolaridade')
                                     ->required(false)
-                                    ->searchable()
+                                    
                                     ->options([
                                         '1' => 'Não Alfabetizado',
                                         '2' => 'Fundamental I - Incompleto',
@@ -143,7 +145,10 @@ class InscricaoResource extends Resource
                                         '5' => 'Indígena',
                                         '6' => 'Não Declarar',
                                     ]),
-                            ])->columnSpanFull()
+                            ])->columnSpanFull(),
+                            FileUpload::make('comprovante')
+                               ->downloadable()
+                               ->label('Anexar Comprovante'),
                     ]),
                 Section::make('Análise da Inscrição')
                     ->description('Status')
@@ -297,14 +302,20 @@ class InscricaoResource extends Resource
                         '3' => 'Externo - IFPE - Campus Garanhuns',
                     ]),
                 Tables\Columns\TextColumn::make('user.name')
+                    ->searchable()
                     ->label('Servidor'),
-                Tables\Columns\TextColumn::make('discente.name'),
+                Tables\Columns\TextColumn::make('discente.name')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('cpf')
+                    ->searchable()
                     ->label('CPF'),
                 Tables\Columns\TextColumn::make('nome')
+                    ->searchable()
                     ->label('Externo'),
-                Tables\Columns\TextColumn::make('email'),
+                Tables\Columns\TextColumn::make('email')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('data_nascimento')
+                    ->searchable()
                     ->label('Data de Nascimento')
                     ->date(),
                 Tables\Columns\TextColumn::make('created_at')

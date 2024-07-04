@@ -151,8 +151,6 @@ class AcaoResource extends Resource
                                     ->label('Hora Encerramento')
                                     ->seconds(false)
                                     ->required(true),
-
-
                                 Forms\Components\TextInput::make('carga_hr_semanal')
                                     ->placeholder('HH:mm')
                                     ->label('Carga Horária Semanal')
@@ -163,6 +161,14 @@ class AcaoResource extends Resource
                                     ->label('Carga Horária Total')
                                     ->mask('99:99')
                                     ->required(true),
+                                Forms\Components\Toggle::make('status_comprovante')
+                                    ->live()
+                                    ->label('Apresentar Comprovante na Inscrição?'),
+                                Forms\Components\TextInput::make('descricao_comprovante')
+                                    ->label('Tipo de Comprovante?')
+                                    ->required(fn (Get $get): bool => $get('status_comprovante') === true)
+                                    ->hidden(fn (Get $get): bool => $get('status_comprovante') === false)
+                                    ->placeholder('Descreva qual comprovante o participante deve apresentar no momento da inscrição.'),
                                 Fieldset::make('Período')
                                     ->schema([
                                         Grid::make([

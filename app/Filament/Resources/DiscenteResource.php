@@ -24,6 +24,7 @@ class DiscenteResource extends Resource
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
+                    ->label('Nome')
                     ->maxLength(255),
                 Forms\Components\TextInput::make('username')
                     ->label('Matrícula')
@@ -42,6 +43,7 @@ class DiscenteResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Nome')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('username')
                     ->label('Matrícula')
