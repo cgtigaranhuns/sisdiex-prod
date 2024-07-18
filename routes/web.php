@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CertificadoMinistrante;
+use App\Http\Controllers\CertificadoParticipante;
 use App\Http\Controllers\FormQacademico;
 use App\Http\Controllers\ValidaCertificadoMinistrante;
 use App\Http\Controllers\ValidaCertificadoParticipante;
@@ -34,3 +35,4 @@ Route::get('ValidaCertificadoMinistrante',[ValidaCertificadoMinistrante::class, 
 Route::post('validarMinistrante', [ValidaCertificadoMinistrante::class, 'validar'])->name('validarMinistrante');
 
 Route::get('pdf/Form-qacademico/{id}',[FormQacademico::class, 'print'])->name('imprimirFormQacademico');
+Route::get('pdf/CertificadoParticipante/{id}',[CertificadoParticipante::class, 'print'])->name('imprimirCertificadoParticipante');

@@ -353,12 +353,23 @@ class InscricaoResource extends Resource
                     })
             ])
             ->actions([
-                Tables\Actions\EditAction::make()
+                Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('Imprimir_certificdao')
+                    ->label('Imprimir Certificado')
+                    ->disabled(function ($record) {
+                        if ($record->aprovacao_status == 2) {
+                            return false;
+                        } else {
+                            return true;
+                        }
+                    })
+                    ->url(fn (Inscricao $record): string => route('imprimirCertificadoParticipante', $record))
+                    ->openUrlInNewTab(),
 
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                   // Tables\Actions\DeleteBulkAction::make(),
                     ExportBulkAction::make(),
                 ]),
             ])
