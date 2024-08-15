@@ -46,12 +46,6 @@
             font-family: courier, arial, helvetica;
             margin-top: 8%;
         }
-        .assinaturas {
-            margin:0!important;
-            padding:0!important;
-            border:0!important;
-           
-            }
     </style>
 </head>
 
@@ -78,17 +72,16 @@
         </p>
     </div>
 
-    <table style="margin-top: 170px; width: 100%;  font-family: courier,arial,helvetica; ">
-        <tr style="padding-block: 0px">
-            <td style="text-align: center; " >
-              <img class="assinaturas"  src="{{ asset('img/assinatura_diex.png') }}" width="250px" height="40px">
+    <table style="margin-top: 200px; width: 100%;  font-family: courier,arial,helvetica;">
+        <tr>
+            <td style="text-align: center;">
                 _______________________________________<br>
                 <label>HALDA SIMÕES DA SILVA</label><br>
                 <label><b>Chefe da Divisão de Extensão</b></label>
 
             </td>
-            <td style="text-align: center; ">
-                <img src="{{ asset('img/assinatura_dg.png') }}" alt="Logo"  width="250px" height="40px">
+            <td style="text-align: center;">
+
                 _______________________________________<br>
                 <label>JOSÉ ROBERTO AMARAL NASCIMENTO</label><br>
                 <label><b>Diretor-Geral Campus Garanhuns</b></label>
@@ -109,41 +102,35 @@
 
     </style>
 
-    <div>
+    <div class="break">
 
-    <table style="width: 100%; height: 15%;" >
+        <table style="width: 100%">
             <tr>
                 <td><img src="{{ asset('img/logo-ifpe.png') }}" alt="Logo" width="150" height="200"></td>
                 <td>
-                    <h1 style="width: 100%; font-size:20px; font-family: 'courier,arial,helvetica font-weight: bold;"
-                        align="center"><b>CONTEÚDO PROGRAMÁTICO</b>
-                    </h1>
-               
+                    <p style="width: 100%; font-size:20px; font-family: 'courier,arial,helvetica font-weight: bold;"
+                        align="center"><b>DESCRIÇÃO DA AÇÃO - Módulo/Disciplina/Assunto</b></p>
+                <td>
+                    <p style="width: 100%; font-size:20px; font-family: 'courier,arial,helvetica font-weight: bold;"
+                        align="center"><b>Carga Horária<b></p>
+                </td>
             </tr>
         </table>
-    </div>
 
-    <div style="padding-top: 0%">
-        <table style="width: 100%; height: 300px; font-family: courier,arial,helvetica; border: 1px solid black;">
-            <tr>
-                <td><b>DESCRIÇÃO DA AÇÃO - Módulo/Disciplina/Assunto</b></td>
-                <td><b>Carga Horária</b></td>
-            </tr>
+        <table style="margin-top: -80px; width: 100%;  font-family: courier,arial,helvetica;">
            
                 <tr>
                     <td>
-                        {{ $cp->ementa }}
+                        <div style="margin-left:230px;">{{ $cp->ementa }}</div>
                     </td>
                     <td>
-                        <div style="margin-left: 30px;">{{ $cp->carga_horaria }}</div>
+                        {{ $cp->carga_horaria }}
                     </td>
                 </tr>
            
         </table>
-    </div>
 
-    <div style="padding-top: 10%">
-    <table style=" width: 100%;  font-family: courier,arial,helvetica;  text-align: center;">
+        <table style="margin-top: 420px; width: 100%;  font-family: courier,arial,helvetica;  text-align: center;">
            
                 <tr>
                     <td>
@@ -155,7 +142,6 @@
                 </tr>
            
         </table>
-    </div>
 
 
 
