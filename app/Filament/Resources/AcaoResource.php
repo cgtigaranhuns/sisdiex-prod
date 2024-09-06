@@ -505,6 +505,7 @@ class AcaoResource extends Resource
                     })
                     ->url(fn (Acao $record): string => route('imprimirFormQacademico', $record))
                     ->openUrlInNewTab(),
+                    
 
             ])
             ->bulkActions([
