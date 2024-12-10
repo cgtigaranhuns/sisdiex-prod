@@ -78,13 +78,13 @@
                             </tr>
                             <tr>
                     <td colspan="2">
-                        <div class="card bg-body-tertiary" style="width: 42rem; height: 10rem; margin-left: 19rem;">
+                        <div class="card bg-body-tertiary" style="width: 41rem; height: 10rem; margin-left: 14rem;">
                             <!--   <img width="69" height="69" src="img/consulta.png" alt="add-bookmark--v1"> -->
                             <div class="card-body">
                                 <h5 class="card-title" style="color: brown;">SISDIEX - ATÉ 2023 - GERAR E VALIDAR CERTIFICADOS</h5>
                                 <p class="card-text">Gere e consulte os certificados de participação de curso
                                     ou evento até dezembro de 2023.</p>
-                                <a href="{{ route('ValidaCertificadoMinistrante') }}" class="btn btn-success">Acessar</a>
+                                <a href="http://200.133.8.49/sisdiex/form_inscricoes/form_inscricoes.php" class="btn btn-success">Acessar</a>
                             </div>
                         </div>
                     </td>
