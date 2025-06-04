@@ -38,26 +38,35 @@ class AcoesAtivas extends BaseWidget
 
         return $table
             ->query(
-                Acao::query()->where('status', 2)->where('data_inicio_inscricoes', '<=', $hoje)->where('data_encerramento', '>=', $hoje)->orderby('data_encerramento', 'asc'),
+                Acao::query()->where('status', 2)->where('data_inicio_inscricoes', '<=', $hoje)->where('data_fim_inscricoes', '>=', $hoje)->orderby('data_encerramento', 'asc'),
             )
             ->columns([
-                Tables\Columns\TextColumn::make('titulo'),
+                Tables\Columns\TextColumn::make('titulo')
+                    ->wrap()
+                    ->words(10)
+                    ->label('Título'),
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Proponente'),
                 Tables\Columns\TextColumn::make('Inscrições_analise')
                     ->label('Inscrições Pendentes')
+                    ->badge()
+                    ->color('warning')
                     ->alignCenter()
                     ->default(function (Acao $acao) {
                         return $acao->Inscricao->where('inscricao_status', 1)->count();
                     }),
                 Tables\Columns\TextColumn::make('Inscrições_efetivada')
                     ->label('Inscrições Efetivadas')
+                    ->badge()
+                    ->color('success')
                     ->alignCenter()
                     ->default(function (Acao $acao) {
                         return $acao->Inscricao->where('inscricao_status', 2)->count();
                     }),
                 Tables\Columns\TextColumn::make('Inscrições_recusadas')
                     ->label('Inscrições Recusadas')
+                    ->badge()
+                    ->color('danger')
                     ->alignCenter()
                     ->default(function (Acao $acao) {
                         return $acao->Inscricao->where('inscricao_status', 3)->count();

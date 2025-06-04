@@ -34,6 +34,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Tables\Grouping\Group;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Mail;
 use pxlrbt\FilamentExcel\Actions\Tables\ExportBulkAction;
 
@@ -62,7 +63,6 @@ class InscricaoResource extends Resource
                                 Forms\Components\Select::make('acao_id')
                                     ->label('Ação/Evento')
                                     ->required(false)
-                                    
                                     ->options(Acao::all()->pluck('titulo', 'id')->toArray()),
                                 Radio::make('inscricao_tipo')
                                     ->label('Tipo de Inscrição')
@@ -74,19 +74,18 @@ class InscricaoResource extends Resource
                                 Forms\Components\Select::make('user_id')
                                     ->label('Servidor - IFPE - Campus Garanhuns')
                                     ->required(false)
-                                    
                                     ->options(User::all()->pluck('name', 'id')->toArray()),
                                 Forms\Components\TextInput::make('cpf')
                                     ->mask('999.999.999-99')
-                                    
                                     ->label('CPF'),
                                 Forms\Components\Select::make('discente_id')
                                     ->label('Discente - IFPE - Campus Garanhuns')
                                     ->required(false)
-                                    
-                                    ->getSearchResultsUsing(fn (string $search): array => Discente::where('username', 'like', "%{$search}%")->limit(50)->pluck('name', 'id')->toArray())
-                                    ->getOptionLabelUsing(fn ($value): ?string => Discente::find($value)?->name),
-                                //->options(Discente::all()->pluck('username', 'id')->toArray()), 
+                                    ->preload()
+                                    ->searchable()
+                                    ->relationship('Discente', 'username')
+                                    ->getOptionLabelFromRecordUsing(fn(Model $record) => "{$record->username} - {$record->name}")
+                                    ->searchable(['username', 'name']),
                                 Forms\Components\TextInput::make('nome')
                                     ->label('Externo - IFPE - Campus Garanhuns')
                                     ->required(false)
@@ -106,7 +105,6 @@ class InscricaoResource extends Resource
                                 Forms\Components\Select::make('escolaridade')
                                     ->label('Escolaridade')
                                     ->required(false)
-                                    
                                     ->options([
                                         '1' => 'Não Alfabetizado',
                                         '2' => 'Fundamental I - Incompleto',
@@ -120,8 +118,6 @@ class InscricaoResource extends Resource
                                         '10' => 'Pós-Graduado',
                                         '11' => 'Mestrado',
                                         '12' => 'Doutorado',
-
-
                                     ]),
                                 Forms\Components\DatePicker::make('data_nascimento')
                                     ->label('Data de Nascimento')
@@ -146,9 +142,9 @@ class InscricaoResource extends Resource
                                         '6' => 'Não Declarar',
                                     ]),
                             ])->columnSpanFull(),
-                            FileUpload::make('comprovante')
-                               ->downloadable()
-                               ->label('Anexar Comprovante'),
+                        FileUpload::make('comprovante')
+                            ->downloadable()
+                            ->label('Anexar Comprovante'),
                     ]),
                 Section::make('Análise da Inscrição')
                     ->description('Status')
@@ -172,8 +168,6 @@ class InscricaoResource extends Resource
                                         }
                                     })
                                     ->default('1'),
-
-
                                 Radio::make('aprovacao_status')
                                     ->label('Aprovação')
                                     ->required(false)
@@ -185,9 +179,7 @@ class InscricaoResource extends Resource
                                     ])
                                     ->default('1')
                                     ->afterStateUpdated(function (Get $get, Set $set, $record, Inscricao $inscricao) {
-
                                         if ($get('aprovacao_status') == 2) {
-
                                             $set('certificado_cod', random_int(1000000000, 9999999999));
                                             $set('certificado_data', Carbon::now()->format('d/m/Y'));
                                             Mail::to($record->email)->send(new CertificadoAprovadoParticipante($inscricao));
@@ -197,12 +189,9 @@ class InscricaoResource extends Resource
                                             $set('certificado_data', '');
                                         }
                                     }),
-
-
                                 Forms\Components\TextInput::make('nota')
                                     ->required(false)
                                     ->maxLength(255),
-
                                 Radio::make('motivo_reprovacao')
                                     ->label('Motivo da Reprovação')
                                     ->live()
@@ -211,25 +200,20 @@ class InscricaoResource extends Resource
                                         '2' => 'Não Aproveitamento',
                                         '3' => 'Desistência',
                                         '4' => 'Evasão',
-
                                     ])
                                     ->afterStateUpdated(function ($record, Inscricao $inscricao) {
-                                      //  Mail::to($record->email)->send(new CertificadoNaoAprovadoParticipante($inscricao));
+                                        //  Mail::to($record->email)->send(new CertificadoNaoAprovadoParticipante($inscricao));
                                     }),
-
                                 Forms\Components\TextInput::make('certificado_cod')
                                     ->label('Código do Certificado')
                                     ->readOnly(),
                                 Forms\Components\TextInput::make('certificado_data')
                                     ->label('Data do Certificado')
                                     ->readOnly(),
-
                                 Forms\Components\Textarea::make('obs')
                                     ->label('Observação')
                                     ->required(false)
                                     ->columnSpanFull(),
-
-
                             ])->columns(2)
                     ]),
             ]);
@@ -244,8 +228,7 @@ class InscricaoResource extends Resource
                 Group::make('acao.titulo')
                     ->label('Ação/Evento')
                     ->collapsible()
-                    ->orderQueryUsing(fn (Builder $query, string $direction) => $query->orderBy('id', $direction)),
-
+                    ->orderQueryUsing(fn(Builder $query, string $direction) => $query->orderBy('id', $direction)),
             ])
             ->columns([
                 Tables\Columns\TextColumn::make('id')
@@ -257,42 +240,42 @@ class InscricaoResource extends Resource
                     ->Label('Status da Inscrição')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         '1' => 'warning',
                         '2' => 'success',
                         '3' => 'danger',
                     })
-                    ->formatStateUsing(function($state){
-                        if($state == 1) {
+                    ->formatStateUsing(function ($state) {
+                        if ($state == 1) {
                             return 'Em Análise';
                         }
-                        if($state == 2) {
+                        if ($state == 2) {
                             return 'Aprovada';
                         }
-                        if($state == 3) {
+                        if ($state == 3) {
                             return 'Recusada';
                         }
-                    }),  
+                    }),
                 Tables\Columns\TextColumn::make('aprovacao_status')
                     ->Label('Status da Aprovação')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         '1' => 'warning',
                         '2' => 'success',
                         '3' => 'danger',
                     })
-                    ->formatStateUsing(function($state){
-                        if($state == 1) {
+                    ->formatStateUsing(function ($state) {
+                        if ($state == 1) {
                             return 'Em Análise';
                         }
-                        if($state == 2) {
+                        if ($state == 2) {
                             return 'Aprovada';
                         }
-                        if($state == 3) {
+                        if ($state == 3) {
                             return 'Recusada';
                         }
-                    }),  
+                    }),
                 Tables\Columns\SelectColumn::make('inscricao_tipo')
                     ->label('Tipo de Inscrição')
                     ->disabled()
@@ -329,9 +312,9 @@ class InscricaoResource extends Resource
             ])
             ->filters([
                 Filter::make('Inscrições em Análise')
-                    ->query(fn (Builder $query): Builder => $query->where('inscricao_status', 1)),
+                    ->query(fn(Builder $query): Builder => $query->where('inscricao_status', 1)),
                 Filter::make('Inscrições em Aprovadas')
-                    ->query(fn (Builder $query): Builder => $query->where('inscricao_status', 2)),
+                    ->query(fn(Builder $query): Builder => $query->where('inscricao_status', 2)),
                 SelectFilter::make('Evento/Ação')->relationship('acao', 'titulo'),
                 Tables\Filters\Filter::make('data_inicio')
                     ->form([
@@ -344,11 +327,11 @@ class InscricaoResource extends Resource
                         return $query
                             ->when(
                                 $data['inicio_de'],
-                                fn ($query) => $query->whereDate('data_inicio', '>=', $data['inicio_de'])
+                                fn($query) => $query->whereDate('data_inicio', '>=', $data['inicio_de'])
                             )
                             ->when(
                                 $data['inicio_ate'],
-                                fn ($query) => $query->whereDate('data_inicio', '<=', $data['inicio_ate'])
+                                fn($query) => $query->whereDate('data_inicio', '<=', $data['inicio_ate'])
                             );
                     })
             ])
@@ -363,13 +346,11 @@ class InscricaoResource extends Resource
                             return true;
                         }
                     })
-                    ->url(fn (Inscricao $record): string => route('imprimirCertificadoParticipante', $record))
+                    ->url(fn(Inscricao $record): string => route('imprimirCertificadoParticipante', $record))
                     ->openUrlInNewTab(),
-
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                   // Tables\Actions\DeleteBulkAction::make(),
                     ExportBulkAction::make(),
                 ]),
             ])
