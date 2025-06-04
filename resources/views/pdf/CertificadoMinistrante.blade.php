@@ -72,8 +72,8 @@
             CPF: <b>{{$cp->cpf}}</b>
             ministrou o(a)  {{ $cp->acao->tipoacao->nome }}:<br>
             <b>{{ $cp->acao->titulo }}</b><br> no período de
-            <b>{{ \Carbon\Carbon::parse($cp->acao->data_inicio)->format('d/m/Y') }}</b> a
-            <b>{{ \Carbon\Carbon::parse($cp->acao->data_termino)->format('d/m/Y') }}</b>
+            <b>{{ \Carbon\Carbon::parse($cp->data_inicio)->format('d/m/Y') }}</b> a
+            <b>{{ \Carbon\Carbon::parse($cp->data_termino)->format('d/m/Y') }}</b>
             contabilizando carga horária de <b>{{ $cp->acao->carga_hr_total }}</b> horas.
         </p>
     </div>
