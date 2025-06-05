@@ -74,7 +74,7 @@
             <b>{{ $cp->acao->titulo }}</b><br> no período de
             <b>{{ \Carbon\Carbon::parse($cp->data_inicio)->format('d/m/Y') }}</b> a
             <b>{{ \Carbon\Carbon::parse($cp->data_termino)->format('d/m/Y') }}</b>
-            contabilizando carga horária de <b>{{ $cp->acao->carga_hr_total }}</b> horas.
+            contabilizando carga horária de <b>{{ $cp->carga_horaria }}</b> horas.
         </p>
     </div>
 
