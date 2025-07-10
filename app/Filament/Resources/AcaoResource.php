@@ -24,6 +24,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Get;
+use Filament\Tables\Actions\ReplicateAction;
 
 
 class AcaoResource extends Resource
@@ -166,8 +167,8 @@ class AcaoResource extends Resource
                                     ->label('Apresentar Comprovante na Inscrição?'),
                                 Forms\Components\TextInput::make('descricao_comprovante')
                                     ->label('Tipo de Comprovante?')
-                                    ->required(fn (Get $get): bool => $get('status_comprovante') === true)
-                                    ->hidden(fn (Get $get): bool => $get('status_comprovante') === false)
+                                    ->required(fn(Get $get): bool => $get('status_comprovante') === true)
+                                    ->hidden(fn(Get $get): bool => $get('status_comprovante') === false)
                                     ->placeholder('Descreva qual comprovante o participante deve apresentar no momento da inscrição.'),
                                 Fieldset::make('Período')
                                     ->schema([
@@ -316,18 +317,18 @@ class AcaoResource extends Resource
                                 Forms\Components\Textarea::make('status_justifique')
                                     ->columnSpan('2')
                                     ->label('Justificativa')
-                                    ->hidden(fn (Get $get) => $get('status') != '3'),
+                                    ->hidden(fn(Get $get) => $get('status') != '3'),
 
                                 Forms\Components\DatePicker::make('data_inicio_inscricoes')
                                     ->closeOnDateSelection()
                                     ->label('Início das Incrições')
-                                    ->hidden(fn (Get $get) => $get('status') == '3'),
-                                    
+                                    ->hidden(fn(Get $get) => $get('status') == '3'),
+
                                 Forms\Components\DatePicker::make('data_fim_inscricoes')
                                     ->closeOnDateSelection()
                                     ->label('Encerramento das Incrições')
-                                    ->hidden(fn (Get $get) => $get('status') == '3'),
-                                    
+                                    ->hidden(fn(Get $get) => $get('status') == '3'),
+
                                 Forms\Components\Radio::make('doacao')
                                     ->label('Doação')
                                     ->live()
@@ -337,7 +338,7 @@ class AcaoResource extends Resource
 
                                     ]),
                                 Forms\Components\TextInput::make('tipo_doacao')
-                                    ->hidden(fn (Get $get): bool => $get('doacao') === null || $get('doacao') === '2')
+                                    ->hidden(fn(Get $get): bool => $get('doacao') === null || $get('doacao') === '2')
                                     ->label('Tipo de Doação')
                                     ->columnSpanFull()
                                     ->maxLength(255),
@@ -351,15 +352,15 @@ class AcaoResource extends Resource
 
                                     ]),
                                 Forms\Components\TextInput::make('cota_servidor')
-                                    ->hidden(fn (Get $get): bool => $get('cota') === null || $get('cota') === '2')
+                                    ->hidden(fn(Get $get): bool => $get('cota') === null || $get('cota') === '2')
                                     ->label('Cota para Servidor')
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('cota_discente')
-                                    ->hidden(fn (Get $get): bool => $get('cota') === null || $get('cota') === '2')
+                                    ->hidden(fn(Get $get): bool => $get('cota') === null || $get('cota') === '2')
                                     ->label('Cota para Discente')
                                     ->maxLength(255),
                                 Forms\Components\TextInput::make('cota_externo')
-                                    ->hidden(fn (Get $get): bool => $get('cota') === null || $get('cota') === '2')
+                                    ->hidden(fn(Get $get): bool => $get('cota') === null || $get('cota') === '2')
                                     ->label('Cota para Externo')
                                     ->maxLength(255),
 
@@ -398,22 +399,22 @@ class AcaoResource extends Resource
                     ->Label('Status da Proposta')
                     ->badge()
                     ->alignCenter()
-                    ->color(fn (string $state): string => match ($state) {
+                    ->color(fn(string $state): string => match ($state) {
                         '1' => 'warning',
                         '2' => 'success',
                         '3' => 'danger',
                     })
-                    ->formatStateUsing(function($state){
-                        if($state == 1) {
+                    ->formatStateUsing(function ($state) {
+                        if ($state == 1) {
                             return 'Em Análise';
                         }
-                        if($state == 2) {
+                        if ($state == 2) {
                             return 'Aprovada';
                         }
-                        if($state == 3) {
+                        if ($state == 3) {
                             return 'Recusada';
                         }
-                    }),  
+                    }),
 
                 Tables\Columns\TextColumn::make('user.name')
                     ->searchable()
@@ -467,7 +468,7 @@ class AcaoResource extends Resource
             ])
             ->filters([
                 Filter::make('Em Análise')
-                    ->query(fn (Builder $query): Builder => $query->where('status', 1)),
+                    ->query(fn(Builder $query): Builder => $query->where('status', 1)),
                 SelectFilter::make('proponente')->relationship('user', 'name'),
                 Tables\Filters\Filter::make('data_inicio')
                     ->form([
@@ -480,11 +481,11 @@ class AcaoResource extends Resource
                         return $query
                             ->when(
                                 $data['inicio_de'],
-                                fn ($query) => $query->whereDate('data_inicio', '>=', $data['inicio_de'])
+                                fn($query) => $query->whereDate('data_inicio', '>=', $data['inicio_de'])
                             )
                             ->when(
                                 $data['inicio_ate'],
-                                fn ($query) => $query->whereDate('data_inicio', '<=', $data['inicio_ate'])
+                                fn($query) => $query->whereDate('data_inicio', '<=', $data['inicio_ate'])
                             );
                     })
             ])
@@ -503,14 +504,18 @@ class AcaoResource extends Resource
                             return true;
                         }
                     })
-                    ->url(fn (Acao $record): string => route('imprimirFormQacademico', $record))
+                    ->url(fn(Acao $record): string => route('imprimirFormQacademico', $record))
                     ->openUrlInNewTab(),
-                    
+                ReplicateAction::make()
+                    ->label('Replicar')
+                    ->modalHeading('Replicar Ação?'),
+                   
+
 
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                  //  Tables\Actions\DeleteBulkAction::make(),
+                    //  Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ])
             ->emptyStateActions([
