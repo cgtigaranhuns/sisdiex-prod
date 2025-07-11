@@ -25,7 +25,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Get;
 use Filament\Tables\Actions\ReplicateAction;
-
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Mail;
 
 class AcaoResource extends Resource
 {
@@ -508,8 +509,42 @@ class AcaoResource extends Resource
                     ->openUrlInNewTab(),
                 ReplicateAction::make()
                     ->label('Replicar')
-                    ->modalHeading('Replicar Ação?'),
-                   
+                    ->modalHeading('Replicar Ação?')
+                    ->excludeAttributes([
+                        'data_inicio',
+                        'data_encerramento',
+                        'hora_inicio',
+                        'hora_encerramento',
+                        'created_at',
+                        'updated_at',
+                        'data_inicio_inscricoes',
+                        'data_fim_inscricoes',
+                        'doacao',
+                        'tipo_doacao',
+                        'cota',
+                        'cota_servidor',
+                        'cota_discente',
+                        'cota_externo',
+                        'status'
+                    ])
+                    
+
+                       
+                    ->successRedirectUrl(fn(Model $replica): string => route('filament.admin.resources.acaos.edit', [
+                        'record' => $replica->getKey(),
+                    ]))
+                    ->after(function (Model $replica): void {
+                        $user = auth()->user();
+                        $acaoTitulo = $replica->titulo ?? 'Ação sem título';
+                        Mail::raw(
+                            "A ação '{$acaoTitulo}' foi replicada pelo usuário {$user->name} ({$user->email}).",
+                            function ($message) {
+                                $message->to('diex@garanhuns.ifpe.edu.br')
+                                        ->subject('Ação Replicada no SISDIEX');
+                            }
+                        );
+                    })
+
 
 
             ])
